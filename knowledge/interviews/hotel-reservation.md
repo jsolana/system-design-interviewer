@@ -2,7 +2,7 @@
 title: Hotel Reservation System
 type: interview
 sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 7 Hotel Reservation System, pp. 195-223]
-concepts: [idempotency, optimistic-concurrency-control, transactions-and-isolation-levels, database-partitioning, caching, change-data-capture, two-phase-commit, saga, unique-id-generation, database-replication]
+concepts: [idempotency, optimistic-concurrency-control, transactions-and-isolation-levels, database-partitioning, caching, change-data-capture, two-phase-commit, saga, unique-id-generation, replication]
 difficulty: medium
 ---
 
@@ -66,7 +66,7 @@ Microservices: CDN for static assets; **public API gateway** (rate limiting, aut
 - Inventory cache: performance versus tolerated inconsistency (DB validates).
 
 ## Related concepts
-[[idempotency]], [[optimistic-concurrency-control]], [[transactions-and-isolation-levels]], [[database-partitioning]], [[caching]], [[change-data-capture]], [[two-phase-commit]], [[saga]], [[unique-id-generation]], [[database-replication]]
+[[idempotency]], [[optimistic-concurrency-control]], [[transactions-and-isolation-levels]], [[database-partitioning]], [[caching]], [[change-data-capture]], [[two-phase-commit]], [[saga]], [[unique-id-generation]], [[replication]]
 
 ## Follow-up questions
 - If the reservation data does not fit in one DB: archive and shard by hotel_id.

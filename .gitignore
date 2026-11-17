@@ -1,2 +1,5 @@
 .env
 docs
+researcher/.venv/
+__pycache__/
+practice/.venv/

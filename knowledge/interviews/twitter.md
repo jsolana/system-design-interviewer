@@ -2,7 +2,7 @@
 title: Twitter
 type: interview
 sources: [Grokking the System Design Interview (PDF), "Designing Twitter" pp. 72-81]
-concepts: [database-partitioning, unique-id-generation, consistent-hashing, caching, database-replication, load-balancer, fan-out, sql-vs-nosql]
+concepts: [database-partitioning, unique-id-generation, consistent-hashing, caching, replication, load-balancer, fan-out, sql-vs-nosql]
 difficulty: medium
 ---
 
@@ -51,7 +51,7 @@ Multiple app servers behind an LB, a DB optimized for many reads, file storage f
 Shard by UserID (local query, hot users) vs TweetID (distribution, read fan-out) vs combined with a time-based ID; availability > consistency.
 
 ## Related concepts
-[[database-partitioning]], [[unique-id-generation]], [[consistent-hashing]], [[caching]], [[database-replication]], [[load-balancer]], [[fan-out]], [[sql-vs-nosql]]
+[[database-partitioning]], [[unique-id-generation]], [[consistent-hashing]], [[caching]], [[replication]], [[load-balancer]], [[fan-out]], [[sql-vs-nosql]]
 
 ## Follow-up questions
 Handling hot users; how to serve feeds (merge/sort by time, pagination, top N, pre-generation).

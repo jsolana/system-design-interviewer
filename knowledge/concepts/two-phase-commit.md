@@ -2,7 +2,7 @@
 title: Two-phase commit (2PC) and distributed transactions
 type: concept
 aliases: [2PC, atomic commit, XA transactions, distributed transactions, in-doubt]
-sources: [System Design Interview Vol. 2 (Xu & Lam, PDF) ch. 12 pp. 346-349, Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 9 (pp. 354-364)]
+sources: [System Design Interview Vol. 2 (Xu & Lam, PDF) ch. 12 pp. 346-349, Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 9 (pp. 354-364), DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 8 (pp. 328-334)]
 ---
 
 # Two-phase commit (2PC)
@@ -34,6 +34,10 @@ When strong atomicity is needed across systems with XA support; avoid across het
 
 ## Additional detail (Xu & Lam Vol. 2, ch. 12)
 Prepare (the coordinator asks all DBs to prepare and hold locks) and commit/abort. It is a low-level solution (X/Open XA standard) with poor performance: locks are held while waiting for other nodes and the coordinator is a single point of failure. Application-level alternatives: TC/C and [[saga]]. See [[digital-wallet]].
+
+## Additional detail (DDIA 2nd edition, ch. 8)
+- *2nd edition (new framing)*: two kinds of distributed transactions. **Database-internal** (NewSQL: Spanner, CockroachDB, TiDB, YugabyteDB, FoundationDB, VoltDB; Kafka transactions) use 2PC but fix XA's problems: replicated coordinator with automatic failover (via consensus), direct coordinator-shard communication, replicated participants, coupling with distributed concurrency control (deadlock detection, consistent reads); snapshot isolation or SSI across shards is possible. **Heterogeneous** (XA across vendors/brokers) suffers the lowest-common-denominator trap. Many cloud services avoid distributed transactions.
+- Cost of 2PC: extra fsyncs and network round trips.
 
 ## Appears in
 [[digital-wallet]], [[hotel-reservation]], [[payment-system]]

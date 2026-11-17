@@ -1,8 +1,8 @@
 ---
 title: Notification System
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/notification-system, System Design Interview Vol.1 (Alex Xu) ch. 10]
-concepts: [message-queues, idempotency, rate-limiting, stateless-architecture]
+sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/notification-system, System Design Interview Vol.1 (Alex Xu) ch. 10, https://slack.engineering/how-slack-rebuilt-notifications/]
+concepts: [queue-backlog-management, retries-timeouts-and-backoff, message-queues, idempotency, rate-limiting, stateless-architecture, online-data-migration]
 difficulty: medium
 ---
 
@@ -55,3 +55,4 @@ The three deep dives.
   - Reliability: do not lose data (persist in a notification log + retries; delay or reordering is accepted, never loss); exactly-once delivery is impossible, duplication is reduced with **dedupe by event ID** ([[idempotency]]).
   - Extras: notification templates, user settings, per-user [[rate-limiting]] (frequency capping), retries by re-enqueueing and alerting if it persists, security with appKey/appSecret, monitoring the number of queued notifications (more workers), event tracking (open rate, click rate).
   - Differs from the base design (internal platform with campaigns and quiet hours): this chapter is a classic architecture with external providers, without scheduling or campaigns.
+- **Slack notification preferences rebuild**, source: https://slack.engineering/how-slack-rebuilt-notifications/. Differs: about the preference model, not the delivery pipeline. Four conflicting preference systems (desktop/mobile, "what" coupled to "how") for millions of users were merged into one model: what to notify about (all / mentions and DMs / mute) decoupled from push delivery (desktop+mobile / one / disabled). Migration used read-time interpretation of legacy values and a backfilled push flag so rollback was safe; settings engagement rose 5x. See [[online-data-migration]].

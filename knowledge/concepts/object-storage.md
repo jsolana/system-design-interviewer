@@ -30,7 +30,7 @@ Very durable and cheap, but slow and with no in-place update or efficient listin
 Large binaries and rarely changing data. Not for transactional databases or low-latency random access (use block storage).
 
 ## Appears in
-[[s3-object-storage]]
+[[git-repository-hosting]], [[s3-object-storage]]
 
 ## See also
 [[erasure-coding]], [[s3-object-storage]], [[cdn-edge-computing]], [[write-ahead-log]]

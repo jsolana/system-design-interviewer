@@ -33,7 +33,7 @@ When an existing search engine cannot be used; in practice, [[full-text-search]]
 - Lucene (the basis of Elasticsearch/Solr) stores the term -> postings list mapping in sorted SSTable-like files that are merged in the background, i.e. the same idea as [[lsm-trees]]. In partitioned systems, secondary indexes can be local (per document) or global (per term) ([[database-partitioning]]).
 
 ## Appears in
-[[distributed-email-service]], [[fb-post-search]], [[twitter-search]]
+[[distributed-email-service]], [[fb-post-search]], [[linkedin-talent-search]], [[twitter-search]]
 
 ## See also
 [[full-text-search]], [[redis-sorted-sets]], [[count-min-sketch]]

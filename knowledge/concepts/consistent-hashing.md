@@ -46,7 +46,7 @@ When state lives on the server and traffic must be routed to it.
 - Nuance: Kleppmann warns that the term "consistent hashing" is used confusingly and that, as defined by Karger et al. (choosing random partition boundaries), it works poorly for databases; in practice a fixed number of partitions or dynamic partitioning is preferred (see [[database-partitioning]]). It has nothing to do with the "consistency" of ACID or of replication.
 
 ## Appears in
-[[ad-click-aggregator]], [[distributed-cache]], [[distributed-rate-limiter]], [[fb-live-comments]], [[key-value-store]], [[metrics-monitoring]], [[nearby-friends]], [[pastebin]], [[s3-object-storage]], [[twitter]], [[twitter-search]], [[url-shortener]], [[web-crawler]], [[whatsapp]]
+[[ad-click-aggregator]], [[distributed-cache]], [[distributed-rate-limiter]], [[fb-live-comments]], [[key-value-store]], [[metrics-monitoring]], [[nearby-friends]], [[pastebin]], [[s3-object-storage]], [[search-query-cache]], [[twitter]], [[twitter-search]], [[url-shortener]], [[web-crawler]], [[whatsapp]]
 
 ## See also
 [[database-partitioning]], [[websockets]]

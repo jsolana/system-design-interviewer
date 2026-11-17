@@ -2,7 +2,7 @@
 title: Digital Wallet
 type: interview
 sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 12 Digital Wallet, pp. 341-377]
-concepts: [event-sourcing, cqrs, two-phase-commit, saga, consensus, database-partitioning, service-discovery, lsm-trees, write-ahead-log, idempotency, reconciliation]
+concepts: [event-sourcing, cqrs, two-phase-commit, saga, transactional-outbox, consensus, database-partitioning, service-discovery, lsm-trees, write-ahead-log, idempotency, reconciliation]
 difficulty: high
 ---
 

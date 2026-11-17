@@ -1,8 +1,8 @@
 ---
 title: Distributed Message Queue
 type: interview
-sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 4 Distributed Message Queue, pp. 91-130]
-concepts: [message-queues, pub-sub, write-ahead-log, replication, consensus, service-discovery, exactly-once-processing, idempotency, long-polling, database-partitioning]
+sources: [https://www.confluent.io/blog/10x-apache-kafka-elasticity/, System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 4 Distributed Message Queue, pp. 91-130, https://www.linkedin.com/blog/engineering/infrastructure/introducing-northguard-and-xinfra]
+concepts: [queue-backlog-management, message-queues, pub-sub, write-ahead-log, replication, consensus, service-discovery, exactly-once-processing, idempotency, long-polling, database-partitioning, retries-timeouts-and-backoff, disaster-recovery, tiered-storage, shard-rebalancing, online-data-migration]
 difficulty: high
 ---
 
@@ -97,4 +97,4 @@ Consumers read from the leader for simplicity (few connections: one partition pe
 - Historical archive: replay already truncated messages -> HDFS or object storage.
 
 ## Variants
-Not covered in the source.
+- **LinkedIn Northguard / Xinfra (Kafka successor)**, source: https://www.linkedin.com/blog/engineering/infrastructure/introducing-northguard-and-xinfra. Differs: motivated by Kafka limits at ~32T records/day, 17 PB/day, 400K topics, 10K+ machines, 100-150 clusters. Data model records -> segments (replication unit, sealed at 1 GB / 1 h / replica failure) -> ranges -> topics, so load balances by striping with no partition rebalancing; sharded metadata in Raft-backed vnodes on a consistent-hash ring; SWIM membership; WAL + file per segment, Direct I/O, sparse RocksDB index; fsync on all replicas before ack (batched about 10 ms) vs Kafka lazy sync; deterministic simulation testing. Xinfra virtualizes Pub/Sub over Northguard and Kafka for live topic migration (dual writes, producers then consumers); 80%+ fewer clusters, 90%+ apps on Xinfra clients. See [[shard-rebalancing]], [[online-data-migration]].

@@ -1,8 +1,8 @@
 ---
 title: Replication
 type: concept
-aliases: [replication, leader-follower, single-leader, multi-leader, leaderless, failover, replication lag, eventual consistency]
-sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 5 (pp. 151-197)]
+aliases: [replication, leader-follower, single-leader, multi-leader, leaderless, failover, replication lag, eventual consistency, database-replication, master-slave, primary-replica]
+sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 5 (pp. 151-197), DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 6 (pp. 229-243), System Design Interview Vol. 1 ch. 1, Grokking "Redundancy and Replication"]
 ---
 
 # Replication
@@ -51,8 +51,23 @@ It is the basis of high availability and read scaling, but it introduces lag bet
 ## When to use it / when not to
 - Single-leader by default; multi-leader if there are several datacenters with local writes or offline use; leaderless if availability is prioritized and eventual consistency is tolerated.
 
+## Additional detail (DDIA 2nd edition, ch. 6)
+- *2nd edition (new emphasis)*: **leaderless vs single-leader performance**: single leader limits read throughput, needs failover and is sensitive to a slow leader; leaderless sends requests to several replicas and uses the fastest (**request hedging**), resilient to **gray failures** (degraded but not dead nodes). Costs: hinted-handoff load, bigger quorums raise tail latency (quorums rarely beyond 4 of 7), partitions can prevent quorums; **sloppy quorum** (Dynamo/Riak; Cassandra/ScyllaDB consistency level ANY) trades read guarantees for availability.
+- **Multi-region leaderless** (Cassandra/ScyllaDB): coordinator in the local region forwards to all local replicas and one replica per other region; choose consistency level: global quorum, per-region quorum or local quorum (faster, staler). Riak keeps clients local and replicates across clusters asynchronously.
+- Concurrency: two writes are concurrent if neither was aware of the other (not about wall-clock time).
+
+## Practical redundancy and failover (System Design Interview Vol. 1 ch. 1; Grokking "Redundancy and Replication")
+Merged from the former `database-replication` note.
+- **Master/slave in practice**: writes go to the master, reads to slaves (reads far outnumber writes, so more slaves than masters). If a slave fails, its reads move to other slaves (or temporarily to the master); a failed master is replaced by promoting a slave, which may be stale and needs recovery scripts.
+- **Redundancy** duplicates critical components to remove SPOFs; **replication** keeps those copies consistent. Failover to an active or passive secondary, automatic or manual, also applies to services (KGS standby, load balancers, index servers), not only databases.
+- If primary and secondary fail together, rebuild on a new server. Scanning the whole database filtering by hash is slow, hence an **inverted index server** mapping IDs to servers ([[twitter-search]], [[yelp]]).
+- Critical data: several copies on different servers, or erasure coding (Reed-Solomon, mentioned for Messenger).
+- Services with in-memory state ([[ticketmaster]]): master-slave and rebuild from the database; anything not persisted (waiting queue) is lost without a replica. Periodic snapshots/checkpoints allow rebuilding ([[typeahead]], [[web-crawler]]).
+- Replicating caches: on a miss the server propagates the new entry to replicas. Asynchronous replication across data centers (e.g. Netflix) in [[multi-data-center]].
+- Trade-off: a slave may serve slightly stale data; promotion after a master failure may lose unreplicated data.
+
 ## Appears in
-[[distributed-message-queue]], [[key-value-store]], [[s3-object-storage]], [[unique-id-generator]]
+[[distributed-message-queue]], [[dropbox]], [[gaming-leaderboard]], [[git-repository-hosting]], [[hotel-reservation]], [[key-value-store]], [[proximity-service]], [[s3-object-storage]], [[twitter]], [[twitter-search]], [[typeahead]], [[unique-id-generator]], [[youtube]]
 
 ## See also
 [[quorum]], [[conflict-resolution]], [[consensus]], [[database-partitioning]], [[change-data-capture]], [[write-ahead-log]], [[distributed-system-faults]]

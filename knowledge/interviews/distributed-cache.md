@@ -2,7 +2,7 @@
 title: Distributed Cache
 type: interview
 sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/distributed-cache]
-concepts: [caching, consistent-hashing, hot-keys, database-partitioning]
+concepts: [caching, tail-latency, consistent-hashing, hot-keys, database-partitioning]
 difficulty: medium
 ---
 

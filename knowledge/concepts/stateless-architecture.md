@@ -22,7 +22,7 @@ A stateful server requires all of a client's requests to reach it (sticky sessio
 Stateful + sticky sessions at the [[load-balancer]] (a less scalable alternative).
 
 ## Trade-offs
-The shared store becomes a critical dependency (needs [[database-replication]]/redundancy) and adds a network hop per request.
+The shared store becomes a critical dependency (needs [[replication]]/redundancy) and adds a network hop per request.
 
 ## When to use it / when not to
 The default for the web tier. Local state only if it is disposable or recoverable.

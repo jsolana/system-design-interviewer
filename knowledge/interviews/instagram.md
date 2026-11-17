@@ -1,8 +1,8 @@
 ---
 title: Instagram
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/instagram, Grokking the System Design Interview (PDF), "Designing Instagram" pp. 38-47]
-concepts: [caching, cdn-edge-computing, fan-out]
+sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/instagram, Grokking the System Design Interview (PDF), "Designing Instagram" pp. 38-47, Machine Learning Design Interview (Khang Pham, 2022), ch. 3 pp. 136-139]
+concepts: [caching, cdn-edge-computing, fan-out, recommendation-system-pipeline, embeddings, exploration-exploitation, approximate-nearest-neighbor-search]
 difficulty: medium
 ---
 
@@ -55,3 +55,11 @@ Not covered in the source.
   - Sharding by UserID (hot users, uneven distribution, ID = shard + local sequence) vs by PhotoID (dedicated DB generating 64-bit IDs, two even/odd instances behind an LB). **PhotoID = epoch (31 bits for 50 years) + sequence (9 bits, reset every second)**; shard = PhotoID % 10. Many logical partitions mapped to few physical servers with a configuration file to migrate them.
   - Feed: computing on the fly (latest 100 photos from each followed user + ranking) is slow -> pre-generate in a `UserNewsFeed` table with dedicated incremental servers; delivery pull / push (long poll) / hybrid (push for few followers, pull for celebrities). See [[fan-out]].
   - Cache: CDN and geographic photo caches; Memcache for metadata with LRU; 80-20 rule.
+
+- **Machine Learning Design Interview (Khang Pham), ch. 3 pp. 136-139 - recommending content from non-friends (Explore)**: recommend accounts/media outside the user's network based on interests (e.g., a user who likes a van-life magazine); different from pure cold start.
+  - Metrics: high recall for candidate generation, CTR for ranking, follow rate of new accounts.
+  - Candidate retrieval: identify **seeds** (authors/media with clear interest) and expand them with kNN pipelines giving similar media/authors; similarity by embeddings (user embeddings trained word2vec-style from engagement sessions) and by **co-occurrence** (count pairs of co-engaged media, aggregate, take top N per seed). See [[embeddings]], [[approximate-nearest-neighbor-search]].
+  - Data: sessions with positive (like, comment, save) and negative signals ("not interested", "see fewer"); features on engagement, author-viewer interaction, counters/trends, content quality, image/video understanding, content taxonomy.
+  - Models: two-tower and gradient boosted trees. Ranking value: `Value(post) = P(like)^w_like * (1 - P(not_interested))^w_see_less`.
+  - Cold start: fallback graph exploration (accounts followed by accounts the user liked as seeds, one-hop and two-hop), popular media for brand-new users, adapting as responses arrive ([[exploration-exploitation]]).
+  - Differs from the base: ML recommendation, not upload/storage/feed fan-out.

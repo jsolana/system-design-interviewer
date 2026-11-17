@@ -33,7 +33,7 @@ Round and approximate (e.g. 99987/9.1 ≈ 100000/10), write down assumptions and
 In step 2 of the interview ([[system-design-interview-framework]]) after agreeing on the design; warn the interviewer before spending time on it.
 
 ## Appears in
-
+[[duplicate-url-detection]], [[sales-rank]]
 
 ## See also
 [[system-design-interview-framework]]

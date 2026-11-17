@@ -1,8 +1,8 @@
 ---
 title: Payment System (Stripe-style)
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/payment-system, System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 11 Payment System, pp. 315-339, Designing Data-Intensive Applications (Kleppmann), chs. 1 and 12]
-concepts: [idempotency, message-queues, exactly-once-processing, double-entry-ledger, reconciliation, two-phase-commit, consensus, derived-data-and-dataflow]
+sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/payment-system, System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 11 Payment System, pp. 315-339, Designing Data-Intensive Applications (Kleppmann), chs. 1 and 12, https://stripe.dev/blog/ledger-stripe-system-for-tracking-and-validating-money-movement, https://stripe.dev/blog/how-stripes-document-databases-supported-99.999-uptime-with-zero-downtime-data-migrations]
+concepts: [idempotency, transactional-outbox, message-queues, exactly-once-processing, double-entry-ledger, reconciliation, two-phase-commit, consensus, derived-data-and-dataflow, retries-timeouts-and-backoff, data-integrity-and-backups, slos-slis-and-error-budgets, online-data-migration]
 difficulty: high
 ---
 
@@ -68,3 +68,5 @@ Source: System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 11 Payment System, p
 - **Consistency**: between internal services, exactly-once; with the PSP, idempotency + reconciliation (do not assume the external party is always right); replicas: read and write only on the primary, or replicas synchronized with consensus (Paxos/Raft; YugabyteDB, CockroachDB).
 - **Security**: HTTPS, encryption and integrity, SSL with certificate pinning, multi-region replication and snapshots, rate limiting and firewall (DDoS), card **tokenization**, PCI DSS, anti-fraud (AVS, CVV, behavioral analysis).
 - Extras: monitoring, alerts, debugging tools, currency exchange, geography, cash payments (Uber/Airbnb), Google/Apple Pay.
+- **Stripe Ledger and data-quality platform**, source: https://stripe.dev/blog/ledger-stripe-system-for-tracking-and-validating-money-movement. Differs: not the payment flow but proving money movement is correct. Immutable append-only ledger modeling producers as state machines and fund flows; double-entry accounts (clearing accounts should reach zero); independent keyed events reconciled out of order; checks for clearing, timeliness, completeness combined into a DQ score; statistical anomaly detection; event-sourced replay; data fixes reviewed like code (impact report + two-phase commit). Numbers: ~5B ledger events/day, 99.99% of dollar volume verified within 4 days, 99.9999% explainability, 99.999% API availability, 10x data growth. Trade-off: immutability gives audit but fixes require revert and reprocess.
+- **Stripe DocDB zero-downtime data movement** (same-company, storage side), source: https://stripe.dev/blog/how-stripes-document-databases-supported-99.999-uptime-with-zero-downtime-data-migrations. See [[online-data-migration]].

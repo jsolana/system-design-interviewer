@@ -28,7 +28,7 @@ Synchronization with the primary DB via [[change-data-capture]].
 Elasticsearch when search is a core feature; Postgres FTS for moderate scale.
 
 ## Appears in
-[[distributed-email-service]], [[fb-post-search]], [[ticketmaster]], [[tinder]], [[yelp]]
+[[distributed-email-service]], [[fb-post-search]], [[linkedin-talent-search]], [[ticketmaster]], [[tinder]], [[yelp]]
 
 ## See also
 [[database-indexing]], [[change-data-capture]], [[caching]]

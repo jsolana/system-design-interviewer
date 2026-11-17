@@ -2,7 +2,7 @@
 title: Ad Click Aggregator
 type: interview
 sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/ad-click-aggregator, System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 6 Ad Click Event Aggregation, pp. 159-193]
-concepts: [stream-processing, derived-data-and-dataflow, consistent-hashing, olap-columnar-stores, http-redirects, idempotency, hot-keys, message-queues, caching, exactly-once-processing]
+concepts: [stream-processing, derived-data-and-dataflow, consistent-hashing, olap-columnar-stores, http-redirects, idempotency, hot-keys, message-queues, caching, exactly-once-processing, data-pipeline-reliability]
 difficulty: medium
 ---
 

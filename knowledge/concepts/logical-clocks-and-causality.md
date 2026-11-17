@@ -2,7 +2,7 @@
 title: Logical clocks and causality (Lamport, version vectors)
 type: concept
 aliases: [Lamport timestamps, version vectors, happens-before, causal consistency, concurrent writes, sequence numbers]
-sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 5 (pp. 184-193), ch. 9 (pp. 339-352)]
+sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 5 (pp. 184-193), ch. 9 (pp. 339-352), DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 10 (pp. 420-423)]
 ---
 
 # Logical clocks and causality
@@ -28,8 +28,11 @@ Causality requires no global coordination and does not sacrifice availability, b
 ## When to use it / when not to
 In multi-leader/leaderless replication and in systems that need causal order without consensus; for uniqueness/locks use [[consensus]].
 
-## Appears in
+## Additional detail (DDIA 2nd edition, ch. 10)
+- *2nd edition*: logical clocks are treated alongside ID generation: Lamport timestamps (counter, node ID), **hybrid logical clocks** (new: physical-time-like, monotonic even if NTP jumps back, consistent with happens-before, no special hardware), vector clocks (detect concurrency, large). Lamport/HLC order is weaker than linearizability: only guarantees greater than timestamps already seen. See [[unique-id-generation]].
 
+## Appears in
+[[google-docs]]
 
 ## See also
 [[replication]], [[quorum]], [[linearizability]], [[unique-id-generation]]

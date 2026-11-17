@@ -1,8 +1,8 @@
 ---
 title: FB News Feed
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-news-feed, System Design Interview Vol.1 (Alex Xu) ch. 11, Grokking the System Design Interview (PDF), newsfeed (chapter with truncated title) pp. 128-136, Designing Data-Intensive Applications (Kleppmann), chs. 1 and 12]
-concepts: [fan-out, caching, hot-keys, message-queues, database-indexing, cdn-edge-computing, rate-limiting, scalability-reliability-maintainability, derived-data-and-dataflow]
+sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-news-feed, System Design Interview Vol.1 (Alex Xu) ch. 11, Grokking the System Design Interview (PDF), newsfeed (chapter with truncated title) pp. 128-136, Designing Data-Intensive Applications (Kleppmann), chs. 1 and 12, Machine Learning Design Interview (Khang Pham, 2022), ch. 5-6 (LinkedIn feed ranking) pp. 171-183]
+concepts: [fan-out, caching, hot-keys, message-queues, database-indexing, cdn-edge-computing, rate-limiting, scalability-reliability-maintainability, derived-data-and-dataflow, ml-evaluation-metrics, ml-loss-functions, imbalanced-data-and-sampling, model-retraining, recommendation-system-pipeline, ml-model-serving]
 difficulty: medium
 ---
 
@@ -75,3 +75,12 @@ See [[instagram]] (similar chronological feed).
   - Load: 4.6k tweets/s on average (peak >12k) and 300k home timeline reads/s; average of ~75 followers per tweet -> ~345k writes/s to timelines; some users with >30M followers (delivery target < 5 s).
   - Approach 1 (pull): tweets in a global table and a join with follows on read (Twitter's first version; it could not keep up with reads). Approach 2 (push): per-user timeline cache updated on posting. Final: **hybrid** (celebrities excluded from fan-out and merged at read time).
   - Differs from the base: no DynamoDB or queue detail; contributes the reasoning with *load parameters* and the view of the timeline as a materialized view maintained by stream processing ([[scalability-reliability-maintainability]], [[derived-data-and-dataflow]], [[fan-out]]).
+
+- **Machine Learning Design Interview (Khang Pham), LinkedIn Feed Ranking, pp. 171-183 - ML-ranked feed**: personalize the LinkedIn feed to maximize long-term engagement by predicting click probability (CTR) per activity (types: connection, informational, profile, opinion, site-specific; CTRs differ a lot by type).
+  - Challenges: 300 M users, personalization, freshness (never repeat seen activities). Latency: 200 ms for the page, feed ranking within 50 ms.
+  - Metrics: offline normalized cross entropy and AUC; online conversion (clicks / feeds shown). Replay evaluation (train up to T, re-rank T+1 data, count matches) ([[ml-evaluation-metrics]]).
+  - Training data options: chronological order (serving bias, sparse rare activities), random serving (bad UX), or model-ranked feed with random permutation within the top (chosen) ([[imbalanced-data-and-sampling]]). CTR < 1% -> negative downsampling, validation/test untouched.
+  - Features: user profile (one hot / embedding), connection strength, age of activity, activity type/hashtag/media, user-activity affinity, cross features. Model: logistic regression (Spark or ADMM) or MLP with sigmoid.
+  - Estimations: 300 M MAU x 40 activities x 10 visits = 120 B samples/month; ~1% CTR -> 1 B positives; 500 B/row -> ~60 TB/month (the text also writes 12 TB).
+  - Design: app server -> feed service (latest model from model repo, features from a key-value **feature store**, activities from **item store** which also guarantees a user always gets the same ranking method) -> model returns feeds sorted by CTR; scale out app and feed services behind load balancers; retrain several times per day.
+  - Differs from the base: ranking by a learned model instead of fan-out/storage design; no push/pull discussion.

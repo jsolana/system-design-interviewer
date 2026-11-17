@@ -2,7 +2,7 @@
 title: Dropbox (file storage and synchronization)
 type: interview
 sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/dropbox, Grokking the System Design Interview (PDF), "Designing Dropbox" pp. 48-59, System Design Interview Vol.1 (Alex Xu) ch. 15 (Google Drive)]
-concepts: [presigned-urls, chunked-multipart-upload, cdn-edge-computing, caching, server-sent-events, long-polling, data-deduplication, database-replication, database-partitioning, load-balancer, message-queues, conflict-resolution, sql-vs-nosql, stateless-architecture, database-indexing, websockets]
+concepts: [presigned-urls, chunked-multipart-upload, cdn-edge-computing, caching, server-sent-events, long-polling, data-deduplication, replication, database-partitioning, load-balancer, message-queues, conflict-resolution, sql-vs-nosql, stateless-architecture, database-indexing, websockets]
 difficulty: medium
 ---
 
@@ -69,7 +69,7 @@ Design a cloud file storage and sharing service (upload, download, share and syn
 ## Variants
 - **System Design Interview Vol. 1 (Alex Xu), ch. 15 "Design Google Drive", pp. 244-262**: upload/download, sync across devices, revisions, sharing and notifications; any file type, encryption at rest, max 10 GB, 10M DAU. Out of scope: Google Docs-style collaborative editing. NFRs: reliability (no losses), fast sync, low bandwidth, scalability and high availability.
   - Estimations: 50M registered users, 10M DAU, 10 GB free -> **500 PB** allocated; 2 uploads/day of 500 KB, read:write ratio 1:1; upload QPS ≈ 10M x 2 / 86,400 ≈ 240 (peak 480).
-  - Didactic approach: start with a single server (Apache + MySQL + `drive/` directory with per-user namespaces) and scale: sharding by `user_id` -> **Amazon S3** with same-region and cross-region replication -> LB, addable web servers, metadata DB moved out with replication/sharding ([[database-replication]], [[database-partitioning]]).
+  - Didactic approach: start with a single server (Apache + MySQL + `drive/` directory with per-user namespaces) and scale: sharding by `user_id` -> **Amazon S3** with same-region and cross-region replication -> LB, addable web servers, metadata DB moved out with replication/sharding ([[replication]], [[database-partitioning]]).
   - API: simple and **resumable** upload (`uploadType=resumable`: request a resumable URL, upload while monitoring status, resume), `download` (by path) and `list_revisions` (path, limit); all with authentication and HTTPS.
   - **Sync conflicts**: the first version processed wins; the second gets a conflict and both copies (local and server) are shown so it can merge or overwrite ([[conflict-resolution]]).
   - Components: **block servers** (split the file into blocks of up to 4 MB as Dropbox does, each with a unique hash; compress and encrypt each block; **delta sync** = only modified blocks are uploaded), cloud storage, **cold storage** (inactive data, e.g. S3 Glacier), LB, API servers, metadata DB, metadata cache, **notification service** (pub/sub) and **offline backup queue** (pending changes for offline clients).

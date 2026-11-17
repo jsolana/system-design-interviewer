@@ -2,7 +2,7 @@
 title: Stream processing
 type: concept
 aliases: [Flink, Kafka, windowing, watermarks, tumbling windows]
-sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 6 Ad Click Event Aggregation, pp. 159-193, https://www.hellointerview.com/learn/system-design/problem-breakdowns/top-k, Designing Data-Intensive Applications (Kleppmann), chs. 11-12]
+sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 6 Ad Click Event Aggregation, pp. 159-193, https://www.hellointerview.com/learn/system-design/problem-breakdowns/top-k, Designing Data-Intensive Applications (Kleppmann), chs. 11-12, DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 12 (pp. 487-529)]
 ---
 
 # Stream processing
@@ -47,8 +47,14 @@ Massive aggregable writes (counters, metrics); not for low volumes.
 - **Map -> Aggregate -> Reduce DAG**: nodes with a single task, intermediate data in memory (TCP or shared memory); state recoverable with periodic snapshots (offset + state) and replay from Kafka.
 - **End-to-end exactly-once**: sending downstream, saving the offset and the ack must be in a distributed transaction (second Kafka queue for atomic commit). See [[ad-click-aggregator]] and [[derived-data-and-dataflow]] (Lambda vs Kappa).
 
+## Additional detail (DDIA 2nd edition, ch. 12)
+- *2nd edition (verification)*: chapter now "Stream Processing" (ch. 12) merges messaging, CDC and processing; the 1st-edition concepts hold. Additions:
+- **Fault tolerance**: *microbatching* (Spark Streaming, ~1 s batches; implicit tumbling window by processing time) vs *rolling checkpoints* via barriers (Flink). Both give exactly-once only inside the framework; external side effects (DB writes, emails) need atomic commit of outputs + state + offsets, or **idempotent** writes (see [[exactly-once-processing]]). Actor frameworks usually do not guarantee delivery after crashes.
+- **Materialized view maintenance** by stream processors (Kafka Streams, ksqlDB); event-sourced views need all events back to the start (no window). Databases often refresh views by batch (`REFRESH MATERIALIZED VIEW`); triggers work only for easily incremental cases; **incremental view maintenance (IVM)** compiles queries into incremental operators (e.g. Materialize). See [[materialized-views]].
+- Stream joins (stream-stream, stream-table enrichment, table-table) and "search on streams" appear as uses; batch jobs use event timestamps, not the machine clock.
+
 ## Appears in
-[[ad-click-aggregator]], [[google-maps]], [[metrics-monitoring]], [[top-k]], [[typeahead]]
+[[ad-click-aggregator]], [[ad-click-prediction]], [[fb-live-comments]], [[food-delivery-time-estimation]], [[google-maps]], [[metrics-monitoring]], [[top-k]], [[typeahead]]
 
 ## See also
 [[message-queues]], [[count-min-sketch]], [[redis-sorted-sets]]

@@ -26,7 +26,7 @@ It is an additional piece that must be highly available; the client stays on its
 Stateful services with persistent connections ([[websockets]]). For stateless services a [[load-balancer]] is enough.
 
 ## Appears in
-[[digital-wallet]], [[distributed-message-queue]], [[metrics-monitoring]], [[nearby-friends]], [[whatsapp]]
+[[digital-wallet]], [[discord-voice-infrastructure]], [[distributed-message-queue]], [[metrics-monitoring]], [[nearby-friends]], [[whatsapp]]
 
 ## See also
 [[websockets]], [[load-balancer]], [[stateless-architecture]]

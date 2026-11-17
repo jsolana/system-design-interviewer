@@ -2,7 +2,7 @@
 title: Proximity Service (nearby businesses)
 type: interview
 sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 1 Proximity Service, pp. 1-34]
-concepts: [geospatial-indexing, geohash, quadtree, caching, database-replication, database-partitioning, multi-data-center]
+concepts: [geospatial-indexing, geohash, quadtree, caching, replication, database-partitioning, multi-data-center]
 difficulty: medium
 ---
 
@@ -79,7 +79,7 @@ Operational considerations for the quadtree: while building, the server does not
 - Replicas instead of sharding for the index; cache only if justified.
 
 ## Related concepts
-[[geospatial-indexing]], [[geohash]], [[quadtree]], [[caching]], [[database-replication]], [[database-partitioning]], [[multi-data-center]]
+[[geospatial-indexing]], [[geohash]], [[quadtree]], [[caching]], [[replication]], [[database-partitioning]], [[multi-data-center]]
 
 ## Follow-up questions
 - What to do if there are not enough businesses in the cell and its neighbors (see [[geohash]]: widen by removing digits).

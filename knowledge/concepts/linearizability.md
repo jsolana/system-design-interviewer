@@ -36,7 +36,7 @@ Linearizable: easy to reason about, expensive in latency and availability. Causa
 Locks, leader election, uniqueness. Not for data whose reads tolerate staleness (feeds, approximate counters): prefer eventual/causal.
 
 ## Appears in
-
+None yet.
 
 ## See also
 [[consensus]], [[replication]], [[transactions-and-isolation-levels]], [[serializability]], [[distributed-lock]]

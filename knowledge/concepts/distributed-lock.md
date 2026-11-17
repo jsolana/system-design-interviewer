@@ -2,7 +2,7 @@
 title: Distributed lock
 type: concept
 aliases: [distributed lock, Redis lock]
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/ticketmaster, Designing Data-Intensive Applications (Kleppmann), ch. 8]
+sources: [https://jepsen.io/analyses/etcd-3.4.3, https://www.hellointerview.com/learn/system-design/problem-breakdowns/ticketmaster, Designing Data-Intensive Applications (Kleppmann), ch. 8]
 ---
 
 # Distributed lock
@@ -35,6 +35,9 @@ Temporary reservations with a timeout. Keep the DB as the final source of truth.
 ## Additional detail (DDIA, ch. 8)
 - **Fencing tokens**: a lock/lease with a TTL is not safe by itself: a client can pause (GC, VM) and keep believing it is the owner after its lease expires. Solution: each grant returns an increasing token (in ZooKeeper the zxid or the cversion) and the protected resource rejects writes with a token lower than the one already seen ([[distributed-system-faults]]).
 - A reliable lock/lease service relies on [[consensus]] (ZooKeeper/etcd: linearizable compare-and-set + sessions with heartbeats), not on local clocks ([[linearizability]]).
+
+## Additional detail (Jepsen etcd 3.4.3)
+Source: https://jepsen.io/analyses/etcd-3.4.3. etcd locks did not provide mutual exclusion: two clients held the same lock simultaneously even in healthy clusters (lease not rechecked after waiting); with 1-3 s lease TTLs and pauses/partitions ~18% of acknowledged updates to a lock-protected set were lost. Use such locks for efficiency only; for safety use **fencing tokens** (e.g. lock key revision) and have the protected resource reject lower tokens. See [[consistency-anomalies-jepsen]].
 
 ## Appears in
 [[flash-sale]], [[gopuff]], [[ticketmaster]], [[uber]], [[web-crawler]]

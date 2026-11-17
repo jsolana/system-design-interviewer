@@ -2,7 +2,7 @@
 title: Exactly-once processing (effectively-once)
 type: concept
 aliases: [exactly-once semantics, at-least-once, at-most-once, end-to-end argument, deduplication, request ID, atomic commit of messages]
-sources: [System Design Interview Vol. 2 (Xu & Lam, PDF) ch. 4 pp. 91-130, Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 11 (fault tolerance en streams), ch. 12 (end-to-end argument, pp. 515-545), ch. 9 (p. 360)]
+sources: [System Design Interview Vol. 2 (Xu & Lam, PDF) ch. 4 pp. 91-130, Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 11 (fault tolerance en streams), ch. 12 (end-to-end argument, pp. 515-545), ch. 9 (p. 360), DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 8 (pp. 334-335)]
 ---
 
 # Exactly-once processing
@@ -33,6 +33,9 @@ Payments, inventory, counters, notifications. If the effect is naturally idempot
 
 ## Additional detail (Xu & Lam Vol. 2, ch. 4)
 Semantics in a queue: at-most-once (ACK=0, offset commit before processing), at-least-once (ACK=1/all with retries, commit after processing; duplicates can be deduplicated with a unique key) and exactly-once (high cost; payments, trading, accounting when the destination is not idempotent). See [[distributed-message-queue]].
+
+## Additional detail (DDIA 2nd edition, ch. 8)
+- *2nd edition (explicit recipe)*: exactly-once does not need a distributed transaction across broker and DB. Keep a table of processed message IDs in the DB: in one local transaction check/insert the ID (unique constraint), do the processing writes, commit; then ack the broker; later delete the ID in a separate transaction. Crash before commit -> retry; crash after commit before ack -> retry sees ID and drops. Same idea in Kafka Streams. Internal distributed transactions still help when IDs and data live on different shards.
 
 ## Appears in
 [[ad-click-aggregator]], [[distributed-message-queue]], [[payment-system]]

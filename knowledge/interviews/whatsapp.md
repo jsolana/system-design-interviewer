@@ -1,7 +1,7 @@
 ---
 title: WhatsApp (messaging)
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/whatsapp, Grokking the System Design Interview (PDF), "Designing Facebook Messenger" pp. 60-71, System Design Interview Vol.1 (Alex Xu) ch. 12]
+sources: [Cracking the Coding Interview ch. 7.7, https://www.hellointerview.com/learn/system-design/problem-breakdowns/whatsapp, Grokking the System Design Interview (PDF), "Designing Facebook Messenger" pp. 60-71, System Design Interview Vol.1 (Alex Xu) ch. 12]
 concepts: [websockets, pub-sub, consistent-hashing, presigned-urls, message-queues, database-indexing, long-polling, service-discovery, online-presence, sql-vs-nosql, unique-id-generation, lsm-trees]
 difficulty: high
 ---
@@ -83,3 +83,8 @@ Partition by chat vs user; regionalization and cell-based architecture (staff). 
   - Presence: do not broadcast every change; the client queries statuses on startup or when opening a chat, the server delays the "online" broadcast by a few seconds and only emits to relevant users.
   - Partitioning by UserID (hash, logical partitions -> physical servers) and not by MessageID; cache of the last ~15 messages of recent conversations on the same machine as the shard; if a chat server fails the client reconnects; message replication (or Reed-Solomon).
   - Groups: group objects identified by GroupChatID on the chat servers, groups table partitioned by GroupChatID; push notifications via a Notification server for offline users.
+- **Cracking the Coding Interview (problem 7.7 Chat Server, pp. 128, 322-326)**: object-oriented slice of a chat server (users, add requests, status, private/group conversations), not networking.
+  - Actions: sign on/off, send/accept/reject add requests (mutual friendship), status message, create private and group chats, add messages.
+  - Classes: UserManager (addUser, approve/reject AddRequest, userSignedOn/Off), User (sentAddRequest/receivedAddRequest), abstract Conversation with GroupChat and PrivateChat, AddRequest (from, to, date, status), UserStatus.
+  - Components: DB for long-term data (SQL, or Bigtable-like for scale), clients, a set of servers; XML between client and servers (readable, easy to debug, not compact); data split across machines with replication to cut lookups; no single point of failure (e.g. one machine handling all sign-ins).
+  - Hardest problems: really knowing a user is online (ping/heartbeat the client), in-memory vs DB state getting out of sync, scaling the server (splitting data raises consistency problems), denial-of-service from clients.

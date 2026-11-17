@@ -2,7 +2,7 @@
 title: Batch processing (Unix, MapReduce, dataflow)
 type: concept
 aliases: [MapReduce, Hadoop, HDFS, Spark, Flink, sort-merge join, broadcast hash join, offline systems, dataflow engines, data lake]
-sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 10 (pp. 411-460)]
+sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 10 (pp. 411-460), DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 11 (pp. 451-481)]
 ---
 
 # Batch processing
@@ -34,8 +34,18 @@ Latency of hours, but easy to reason about and fault tolerant; compared with [[s
 ## When to use it / when not to
 ETL, training, indexing, periodic reports; not for cases that need results in seconds.
 
-## Appears in
+## Additional detail (DDIA 2nd edition, ch. 11)
+*Verification against the 2nd edition (ch. 11 "Batch Processing", pp. 451-481):* the core of the 1st-edition entry (Unix philosophy, MapReduce shuffle, sort-merge join with secondary sort, dataflow engines, Pregel graph processing, human fault tolerance) is confirmed. Differences:
+- The 2nd edition no longer details **broadcast hash joins, partitioned hash joins, map-side merge joins, skew handling and the Voldemort/search-index-building example**; those 1st-edition items are not in this text (do not rely on them as DDIA 2nd-ed content). The Hadoop-vs-MPP "data lake vs warehouse" framing is replaced by the **data lakehouse** (object storage + open table formats + query engines; see [[olap-columnar-stores]]).
+- **Unix tools example** (new): access-log top-5 pages with `awk | sort | uniq -c | sort -n | head`; sort-based approach spills to disk (mergesort, sequential I/O) vs in-memory hash table whose working set is the number of distinct keys.
+- **Storage layer**: distributed filesystems (HDFS 128 MB blocks, NameNode metadata, DataNodes, replication or erasure coding, shared-nothing, tasks scheduled near replicas) vs **object stores** (S3, GCS, Azure Blob; bucket + key, immutable objects, prefix listing not directories, non-atomic rename = copy+delete, no locks; storage and compute separated and scaled independently). Batch storage is shifting from HDFS to object stores; the S3 API is a de facto protocol (MinIO, R2, B2).
+- **Job orchestration** (new): scheduler allocates cores/memory; problems of gang allocation (two 100-core jobs), idle reservations/deadlock, **preemption** of low-priority tasks, so task failures are routine; workflow schedulers (Airflow; Oozie/Azkaban replaced) wait for all upstream jobs; jobs pass data via files in a DFS/object store.
+- **Models**: MapReduce (mapper/shuffle/reducer, per-reducer sorted files) and **dataflow engines** (Spark keeps intermediate data in memory and recomputes lost data from lineage; Flink checkpoints; operators start as soon as input is ready, no needless sorting). SQL/query engines with cost-based optimizers (Hive, Trino, Spark SQL) and **DataFrame APIs** that compile to optimized query plans.
+- **Use cases**: ETL, analytics, **machine learning** (feature prep, LLM data preparation: tokenizing, embeddings), reconciliation, and **serving derived data**: do not write record-by-record from a job into a live DB (load, contention, partial output); bulk-load files and atomically swap dataset versions (TiDB Lightning, Pinot bulk import).
+- Rollback by switching a directory/table version is easy on object stores and table formats ("minimizing irreversibility").
 
+## Appears in
+[[duplicate-url-detection]], [[linkedin-course-recommendation]], [[personal-financial-manager]], [[sales-rank]]
 
 ## See also
 [[stream-processing]], [[derived-data-and-dataflow]], [[olap-columnar-stores]], [[database-partitioning]]

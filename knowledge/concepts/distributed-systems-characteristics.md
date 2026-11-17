@@ -21,7 +21,7 @@ They are the common vocabulary for stating non-functional requirements and justi
 - **Serviceability/manageability**: ease and speed of repairing/maintaining/upgrading; if repair time grows, availability drops. Early failure detection.
 
 ## Variants and techniques
-Redundancy ([[database-replication]]), [[load-balancer]], [[cap-theorem]].
+Redundancy ([[replication]]), [[load-balancer]], [[cap-theorem]].
 
 ## Trade-offs
 Redundancy increases reliability and cost; scaling without losing efficiency requires balancing load across nodes.
@@ -30,7 +30,7 @@ Redundancy increases reliability and cost; scaling without losing efficiency req
 At the start of the design to set priorities (e.g. availability > consistency in social networks).
 
 ## Appears in
-
+None yet.
 
 ## See also
-[[cap-theorem]], [[horizontal-vs-vertical-scaling]], [[database-replication]]
+[[cap-theorem]], [[horizontal-vs-vertical-scaling]], [[replication]]

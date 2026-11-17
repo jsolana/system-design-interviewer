@@ -2,7 +2,7 @@
 title: Event sourcing and CQRS
 type: concept
 aliases: [event log, CQRS, immutable events, materialized views, command vs event, append-only log]
-sources: [System Design Interview Vol. 2 (Xu & Lam, PDF) ch. 12 pp. 355-374, Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 11 (pp. 495-512)]
+sources: [System Design Interview Vol. 2 (Xu & Lam, PDF) ch. 12 pp. 355-374, Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 11 (pp. 495-512), DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 3 (pp. 101-105), ch. 12 (pp. 508-512)]
 ---
 
 # Event sourcing and CQRS
@@ -34,6 +34,11 @@ Domains with auditing and multiple consumers (finance, carts, reservations). Not
 - Terms: **command** (intent, FIFO, may be invalid or involve I/O), **event** (validated fact, immutable, deterministic, in the past; a command generates zero or more), **state**, deterministic **state machine** (validates and applies).
 - Main benefit: **reproducibility/auditability** (balance at any instant, verify historical correctness, compare code versions over the same events). Read views via [[cqrs]].
 - High performance: command/event list in local append-only files with `mmap`, state in RocksDB/SQLite, periodic snapshots in object storage; reliability by replicating only the event list with **Raft** (commands are not enough because event generation may be non-deterministic); scaling with partitions and TC/C or Saga. See [[digital-wallet]].
+
+## Additional detail (DDIA 2nd edition, chs. 3 and 12)
+- *2nd edition*: event sourcing/CQRS moved into the data-models chapter (ch. 3, pp. 101-105). Added advantages: events record **intent** ("booking canceled" vs row mutations); views are reproducible (delete and recompute after a view bug); several views in any data model, even in-memory only; mistakes fixed by compensating/deletion events; audit log; logs absorb write bursts.
+- Added downsides: **determinism with external data** (include the exchange rate in the event or query it by event timestamp); **immutability vs GDPR** (per-user logs can be deleted; otherwise keep personal data outside the event or use **crypto-shredding**); replaying must not repeat side effects (re-sending emails). Name events in the past tense; all views must consume events in the same order. Tools: EventStoreDB, MartenDB, Axon, Kafka + stream processors.
+- Distinction from CDC: see [[change-data-capture]].
 
 ## Appears in
 [[digital-wallet]], [[stock-exchange]]

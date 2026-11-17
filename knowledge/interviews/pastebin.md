@@ -1,7 +1,7 @@
 ---
 title: Pastebin
 type: interview
-sources: [Grokking the System Design Interview (PDF), "Designing Pastebin" pp. 30-37]
+sources: [Cracking the Coding Interview ch. 9.8, Grokking the System Design Interview (PDF), "Designing Pastebin" pp. 30-37]
 concepts: [key-generation-service, caching, database-partitioning, consistent-hashing, load-balancer, sql-vs-nosql, base62-encoding]
 difficulty: low
 ---
@@ -59,4 +59,8 @@ Application layer (reads/writes) + separate storage layer: metadata DB (MySQL or
 Not covered in the source.
 
 ## Variants
-Not covered in the source.
+- **Cracking the Coding Interview (problem 9.8, pp. 145, 394-395)**: no accounts or editing; per-page analytics behind a "stats" link; documents deleted after long inactivity; URLs must not be guessable.
+  - Store documents as files on servers (no search needed) with a DB mapping URL -> server/path; cache hot documents (no invalidation since immutable); shard by hash of URL, or encode the server in the URL and skip the DB (hard to add servers).
+  - URL generation: avoid monotonically increasing ints (guessable). Random GUID (128-bit, ugly) or a random 10-char alphanumeric (36^10 combos): per-URL collision chance is tiny but across a billion URLs collisions will happen, so detect (file/DB exists) and retry.
+  - Analytics: log raw visits (timestamp, IP, location) to files for flexibility, plus a precomputed per-URL, per-month counter store (sharded by URL); optionally sample visits with a per-URL storage probability that decreases with popularity and scale the count back up; cache the generated stats HTML.
+  - Follow-ups: user accounts, new analytics such as referral source, stats shown with each document.

@@ -2,7 +2,7 @@
 title: Distributed Rate Limiter
 type: interview
 sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/distributed-rate-limiter, System Design Interview Vol.1 (Alex Xu) ch. 4, Grokking the System Design Interview (PDF), "Designing an API Rate Limiter" pp. 100-112]
-concepts: [rate-limiting, consistent-hashing, hot-keys, database-partitioning, pub-sub, multi-data-center, redis-sorted-sets]
+concepts: [multi-tenancy-and-fairness, rate-limiting, consistent-hashing, hot-keys, database-partitioning, pub-sub, multi-data-center, redis-sorted-sets, load-shedding-and-overload-handling, graceful-degradation, autoscaling-and-load-management]
 difficulty: medium
 ---
 

@@ -2,7 +2,7 @@
 title: Load balancer
 type: concept
 aliases: [load balancing, sticky sessions]
-sources: [System Design Interview (Alex Xu), Vol. 1, ch. 1 (pp. 10-11, 20-21), Grokking the System Design Interview (PDF), "Load Balancing" pp. 173-175]
+sources: [System Design Interview (Alex Xu), Vol. 1, ch. 1 (pp. 10-11, 20-21), Grokking the System Design Interview (PDF), "Load Balancing" pp. 173-175, https://sre.google/sre-book/load-balancing-frontend/, https://sre.google/sre-book/load-balancing-datacenter/]
 ---
 
 # Load balancer
@@ -48,8 +48,15 @@ The LB itself can be a SPOF (requires redundancy). Sticky sessions simplify loca
 ## When to use it / when not to
 Whenever there is more than one server in a tier. Avoid sticky sessions if state can be externalized.
 
+## Additional detail (Google SRE Book, ch. 19-20)
+- **Frontend**: DNS balancing returns several A/AAAA records but gives weak control (clients pick arbitrarily, resolvers hide client location, EDNS0 client-subnet helps, 512-byte reply cap, cached answers cannot be flushed and some resolvers ignore low TTLs). Anycast gets queries to the nearest DNS server. Next layer is a **VIP** served by network load balancers; combine DNS and VIP levels.
+- **Backend selection and forwarding**: least-loaded needs per-connection state; simple hashing remaps almost everything when backends change; **consistent hashing** keeps mappings stable and works as a stateless fallback (e.g. under DoS). NAT needs a connection table; L2 rewriting/DSR requires one broadcast domain; **GRE encapsulation** lifts that at ~24 bytes overhead per packet (fragmentation unless MTU raised).
+- **Datacenter**: clients keep long-lived connections to a **subset** of 20-100 backends. Random subsetting is uneven (300 clients/300 backends, 30% subsets: least-loaded backend 63% of average, most-loaded 121%; 10% subsets: 50%-150%); **deterministic subsetting** shuffles the backend list per round with a seed and gives every backend equal connections.
+- **Policies**: simple round robin can leave a 2x CPU spread (query cost varies up to 1000x, noisy neighbors ~20%); least-loaded round robin still ~2x spread (count recent errors as active to avoid sinkholing); **weighted round robin** uses backend-reported rate, error and utilization and narrows the gap sharply.
+- **Health**: healthy / refusing / **lame duck** (listening but asks clients to stop; drain 10-150 s); client flow control around 100 active requests per backend. Source: https://sre.google/sre-book/load-balancing-frontend/ and /load-balancing-datacenter/. See also [[load-shedding-and-overload-handling]].
+
 ## Appears in
-[[dropbox]], [[pastebin]], [[twitter]], [[twitter-search]], [[typeahead]], [[web-crawler]]
+[[airbnb-search-ranking]], [[dropbox]], [[pastebin]], [[search-query-cache]], [[twitter]], [[twitter-search]], [[typeahead]], [[web-crawler]]
 
 ## See also
-[[stateless-architecture]], [[database-replication]], [[horizontal-vs-vertical-scaling]]
+[[stateless-architecture]], [[replication]], [[horizontal-vs-vertical-scaling]]

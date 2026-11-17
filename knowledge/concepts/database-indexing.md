@@ -33,7 +33,7 @@ Always on frequently queried columns; do not over-index write-heavy tables.
 - In partitioned systems the secondary index can be local or global ([[database-partitioning]]).
 
 ## Appears in
-[[dropbox]], [[fb-news-feed]], [[gopuff]], [[s3-object-storage]], [[ticketmaster]], [[top-k]], [[url-shortener]], [[whatsapp]], [[yelp]]
+[[dropbox]], [[fb-news-feed]], [[gopuff]], [[s3-object-storage]], [[sales-rank]], [[ticketmaster]], [[top-k]], [[url-shortener]], [[whatsapp]], [[yelp]]
 
 ## See also
 [[full-text-search]], [[caching]]

@@ -2,7 +2,7 @@
 title: Typeahead Suggestion (autocomplete)
 type: interview
 sources: [Grokking the System Design Interview (PDF), "Designing Typeahead Suggestion" pp. 92-99, System Design Interview Vol.1 (Alex Xu) ch. 13]
-concepts: [trie, caching, database-partitioning, load-balancer, database-replication, stream-processing, cdn-edge-computing]
+concepts: [trie, caching, database-partitioning, load-balancer, replication, stream-processing, cdn-edge-computing]
 difficulty: medium
 ---
 
@@ -47,7 +47,7 @@ Client -> (caches of popular terms) -> LB that knows the partitioning scheme -> 
 - Term hash minimizes hotspots but forces fan-out to all servers.
 
 ## Related concepts
-[[trie]], [[caching]], [[database-partitioning]], [[load-balancer]], [[database-replication]], [[stream-processing]]
+[[trie]], [[caching]], [[database-partitioning]], [[load-balancer]], [[replication]], [[stream-processing]]
 
 ## Follow-up questions
 How to remove terms for legal reasons; alternative ranking; personalization (all answered in deep dives).

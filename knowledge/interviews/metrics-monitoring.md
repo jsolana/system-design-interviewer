@@ -2,7 +2,7 @@
 title: Metrics Monitoring (Datadog-style)
 type: interview
 sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/metrics-monitoring, System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 5 pp. 131-157]
-concepts: [stream-processing, olap-columnar-stores, time-series-database, message-queues, service-discovery, consistent-hashing]
+concepts: [stream-processing, olap-columnar-stores, time-series-database, message-queues, service-discovery, consistent-hashing, observability-and-monitoring, alerting-strategy, slos-slis-and-error-budgets, slo-burn-rate-alerting]
 difficulty: high
 ---
 

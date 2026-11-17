@@ -1,8 +1,8 @@
 ---
 title: S3-like Object Storage
 type: interview
-sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 9 S3-like Object Storage, pp. 253-285]
-concepts: [object-storage, erasure-coding, replication, consistent-hashing, consensus, database-partitioning, chunked-multipart-upload, write-ahead-log, multi-data-center, database-indexing]
+sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 9 S3-like Object Storage, pp. 253-285, https://dropbox.tech/infrastructure/improving-storage-efficiency-in-magic-pocket-our-immutable-blob-store]
+concepts: [object-storage, erasure-coding, replication, consistent-hashing, consensus, database-partitioning, chunked-multipart-upload, write-ahead-log, multi-data-center, database-indexing, storage-compaction]
 difficulty: high
 ---
 
@@ -76,4 +76,4 @@ Design an object storage service like Amazon S3 (launched in 2006; 100 trillion 
 - How to distribute replicas across failure domains.
 
 ## Variants
-Not covered in the source.
+- **Dropbox Magic Pocket (exabyte immutable blob store)**, source: https://dropbox.tech/infrastructure/improving-storage-efficiency-in-magic-pocket-our-immutable-blob-store. Differs from the base design by focusing on space reclamation: erasure-coded fixed-size volumes that are never reopened, so deletes need garbage collection plus layered compaction (L1 packing, L2 bounded DP packing, L3 re-encoding the sparsest volumes) with a dynamic threshold controller; metadata (location entries) is the limiting resource. See [[storage-compaction]].

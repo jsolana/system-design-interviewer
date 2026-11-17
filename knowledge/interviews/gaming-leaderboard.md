@@ -2,7 +2,7 @@
 title: Real-time Gaming Leaderboard
 type: interview
 sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 10 Real-time Gaming Leaderboard, pp. 289-314]
-concepts: [redis-sorted-sets, database-partitioning, caching, sql-vs-nosql, database-replication, hot-keys, message-queues]
+concepts: [redis-sorted-sets, database-partitioning, caching, sql-vs-nosql, replication, hot-keys, message-queues]
 difficulty: medium
 ---
 
@@ -62,7 +62,7 @@ Leaderboard for a mobile game: each month a tournament starts with a new ranking
 - Redis as a derived view that can be rebuilt from MySQL.
 
 ## Related concepts
-[[redis-sorted-sets]], [[database-partitioning]], [[caching]], [[sql-vs-nosql]], [[database-replication]], [[hot-keys]], [[message-queues]]
+[[redis-sorted-sets]], [[database-partitioning]], [[caching]], [[sql-vs-nosql]], [[replication]], [[hot-keys]], [[message-queues]]
 
 ## Follow-up questions
 - Show 4 players above/below a user.

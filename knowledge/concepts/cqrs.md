@@ -2,7 +2,7 @@
 title: CQRS
 type: concept
 aliases: [command-query responsibility segregation, command query separation]
-sources: [System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 12 Digital Wallet, pp. 360-361]
+sources: [https://martinfowler.com/bliki/CQRS.html, https://microservices.io/patterns/data/cqrs.html, System Design Interview Vol. 2 (Xu & Lam, PDF), ch. 12 Digital Wallet, pp. 360-361]
 ---
 
 # CQRS
@@ -27,6 +27,12 @@ Auditability and read flexibility at the cost of eventual consistency and greate
 
 ## When to use it / when not to
 Systems with event sourcing and multiple read views (wallets, finance). Not for simple CRUD.
+
+## Additional detail (Fowler, microservices.io)
+- Fowler (credits Greg Young): a separate model to update than to read; they may share a DB, use separate DBs or processes. Benefits: independent modeling/optimization, separate read/write scaling, different access techniques, fits task-based UIs, events, event sourcing.
+- Use in complex domains, large read/write skew, specific bounded contexts (not the whole system). Fowler warns it adds "risky complexity" to most systems; many attempts caused difficulty; if only a few queries hurt, a reporting database may be enough. Keeping two models consistent pushes toward eventual consistency.
+- Microservices.io: with database-per-service, cross-service queries are hard, so build a read-only **view database** per query (often NoSQL) kept current by subscribing to domain events; drawbacks: complexity, duplicated code, replication lag. Alternative: API composition.
+- Note: a senior answer mentions CQRS only where read patterns justify it and states the staleness window to the product owner.
 
 ## Appears in
 [[digital-wallet]]

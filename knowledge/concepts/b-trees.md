@@ -31,7 +31,7 @@ See the comparison table in [[lsm-trees]]. Each key exists in a single place (an
 Default in relational OLTP. For very write-intensive ingestion consider LSM.
 
 ## Appears in
-
+None yet.
 
 ## See also
 [[lsm-trees]], [[database-indexing]], [[write-ahead-log]], [[geospatial-indexing]]

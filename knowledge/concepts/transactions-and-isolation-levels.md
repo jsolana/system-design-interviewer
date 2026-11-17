@@ -2,7 +2,7 @@
 title: Transactions, ACID and isolation levels
 type: concept
 aliases: [ACID, read committed, snapshot isolation, MVCC, repeatable read, lost update, write skew, phantoms, dirty read]
-sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 7 (pp. 221-262)]
+sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 7 (pp. 221-262), Programming Interviews Exposed 3rd ed. ch. 12 (pp. 182-183)]
 ---
 
 # Transactions, ACID and isolation levels
@@ -33,7 +33,8 @@ Simplifies the application's failure model (crashes, partial writes, concurrency
 Dirty writes are avoided with row-level locks until commit; long reads (backups, analytics) with snapshot isolation.
 
 ## Trade-offs
-The stronger the isolation, the higher the performance cost and aborts. Many NoSQL systems lack multi-object transactions; they pay with anomalies that the application must handle.
+- Interview-book framing (Programming Interviews Exposed ch. 12): the canonical example is a money transfer (debit + credit) wrapped in one transaction so both commit or neither does. Guaranteeing all four ACID properties on every transaction has a significant performance cost, isolation most of all, so most systems let you relax isolation. ACID is not a requirement of relational databases, though most modern ones support it. Referential integrity (primary/foreign keys) is a complementary consistency mechanism.
+- The stronger the isolation, the higher the performance cost and aborts. Many NoSQL systems lack multi-object transactions; they pay with anomalies that the application must handle.
 
 ## When to use it / when not to
 Whenever there are invariants across several objects (payments, reservations, inventory). Choose the level consciously: snapshot isolation is usually enough for reads; critical things (balances, seats) require serializable or explicit locking.

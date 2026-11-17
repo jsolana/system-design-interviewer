@@ -32,7 +32,7 @@ Whenever on-disk structures are updated in place or data is to be replicated/der
 In a distributed queue each partition is a WAL split into **segments**: only the active segment receives appends (monotonic offset); inactive ones serve reads and are truncated by retention or capacity. Sequential access on spinning disks/RAID (hundreds of MB/s) and the OS page cache make it very efficient. See [[distributed-message-queue]].
 
 ## Appears in
-[[digital-wallet]], [[distributed-message-queue]], [[s3-object-storage]], [[stock-exchange]]
+[[digital-wallet]], [[distributed-message-queue]], [[git-repository-hosting]], [[s3-object-storage]], [[stock-exchange]]
 
 ## See also
 [[replication]], [[change-data-capture]], [[lsm-trees]], [[b-trees]]

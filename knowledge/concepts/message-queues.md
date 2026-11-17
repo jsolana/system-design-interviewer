@@ -2,7 +2,7 @@
 title: Message queues
 type: concept
 aliases: [colas, SQS, async workers, kafka]
-sources: [System Design Interview Vol. 2 (Xu & Lam, PDF) ch. 4 pp. 91-130, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-news-feed, System Design Interview Vol.1 (Alex Xu), ch. 1, System Design Interview Vol.1 (Alex Xu), ch. 10, Designing Data-Intensive Applications (Kleppmann), ch. 11]
+sources: [https://www.confluent.io/blog/10x-apache-kafka-elasticity/, System Design Interview Vol. 2 (Xu & Lam, PDF) ch. 4 pp. 91-130, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-news-feed, System Design Interview Vol.1 (Alex Xu), ch. 1, System Design Interview Vol.1 (Alex Xu), ch. 10, Designing Data-Intensive Applications (Kleppmann), ch. 11, DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 5 (pp. 189-191), ch. 12 (pp. 488-500)]
 ---
 
 # Message queues
@@ -44,8 +44,14 @@ One queue per notification type (iOS, Android, SMS, email) isolates the outage o
 - Leader-follower replication with ISR and ACK=0/1/all; at-most/at-least/exactly-once semantics depending on when the offset is committed and on producer retries.
 - Extras: tag filtering, delayed/scheduled messages (delay levels, hierarchical time wheel), retry topic, historical archive. See [[distributed-message-queue]].
 
+## Additional detail (DDIA 2nd edition, ch. 12)
+- *2nd edition*: brokers are described as databases optimized for streams: they tolerate clients that come and go, usually allow unbounded queueing, are asynchronous, and some join XA transactions. Event-driven architectures (ch. 5) use them for buffering, redelivery, decoupling and avoiding service discovery; deploy a **schema registry** (Protobuf/Avro/JSON; AsyncAPI). Log-based brokers keep messages (replayable, consumer offsets, sharded logs) unlike transient queues. See [[change-data-capture]] and the outbox pattern.
+
+## Additional detail (Confluent, Kafka elasticity)
+Source: https://www.confluent.io/blog/10x-apache-kafka-elasticity/ (vendor post, example numbers are modeled). In vanilla Kafka, adding a broker means copying partition data to it; with 3 brokers, 100 MBps input, 30-day retention and RF 3 (777.6 TB total) a new broker needs ~194.4 TB, ~43 h on 10 Gbit. Confluent Cloud shrinks this with [[tiered-storage]] (hot data on local disk, rest in object storage, same offsets for clients) and online self-balancing (a moved partition serves clients once caught up). Modeled example: ~6.5 TB moved, ~1.4 h. Side effects: faster failover and upgrades, scale-down as fast as scale-up.
+
 ## Appears in
-[[ad-click-aggregator]], [[camelcamelcamel]], [[chatgpt]], [[distributed-email-service]], [[distributed-message-queue]], [[dropbox]], [[fb-news-feed]], [[fb-post-search]], [[gaming-leaderboard]], [[google-maps]], [[job-scheduler]], [[leetcode]], [[metrics-monitoring]], [[notification-system]], [[payment-system]], [[stock-exchange]], [[uber]], [[web-crawler]], [[whatsapp]], [[youtube]]
+[[ad-click-aggregator]], [[airbnb-search-ranking]], [[camelcamelcamel]], [[chatgpt]], [[distributed-email-service]], [[distributed-message-queue]], [[dropbox]], [[fb-news-feed]], [[fb-post-search]], [[food-delivery-time-estimation]], [[gaming-leaderboard]], [[google-maps]], [[job-scheduler]], [[leetcode]], [[metrics-monitoring]], [[notification-system]], [[payment-system]], [[personal-financial-manager]], [[sales-rank]], [[stock-exchange]], [[uber]], [[web-crawler]], [[whatsapp]], [[youtube]]
 
 ## See also
 [[fan-out]], [[idempotency]]

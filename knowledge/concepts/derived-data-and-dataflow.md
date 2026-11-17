@@ -2,7 +2,7 @@
 title: Derived data, dataflow and database unbundling
 type: concept
 aliases: [system of record, lambda architecture, kappa, dual writes, unbundling the database, materialized views, log-based integration, lambda]
-sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, chs. 11-12 (pp. 487-545), ch. 1]
+sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, chs. 11-12 (pp. 487-545), ch. 1, DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, chs. 1 and 13 (pp. 10-12, 539-579)]
 ---
 
 # Derived data, dataflow and unbundling
@@ -30,6 +30,13 @@ Strict consistency (distributed transactions) vs eventual consistency with logs;
 
 ## When to use it / when not to
 When several views of the same data are needed (search, cache, analytics). With a small load a single RDBMS is usually enough.
+
+## Additional detail (DDIA 2nd edition, chs. 1, 13)
+- *2nd edition*: "Systems of Record and Derived Data" is introduced in ch. 1 (with operational vs analytical systems, ETL and HTAP). Ch. 13 "A Philosophy of Streaming Systems" (formerly 1st-ed ch. 12) keeps the log-based integration thesis: derived views are deterministic functions of the log, which makes restructuring gradual (run old and new views side by side, shift traffic progressively) and recomputation safe. Lambda is criticized again; the unified approach needs replay through the same engine and event-time windowing.
+- **Write path vs read path** (new framing): the write path is the precomputed part (eager evaluation), the read path the work done at query time (lazy); indexes, caches and materialized views move work from read to write path; offline-first clients extend the read path to the device.
+- **Composing storage**: unbundled databases, federated query engines (Trino, Hoptimator), Kafka's protocol as de facto standard; integration across systems is easier with asynchronous streams than synchronous distributed transactions.
+- **Correctness**: *timeliness vs integrity* (ACID couples them; streaming decouples them: integrity via exactly-once, idempotence, deterministic derivation), **loosely interpreted constraints** (overbooking, compensating transactions: apologize later if the business cost is low), **coordination-avoiding** data systems (strong integrity without synchronous coordination; serializability still useful inside derived-state maintenance), end-to-end argument and auditing ("trust, but verify").
+- Ch. 14 "Doing the Right Thing" (predictive analytics, bias, privacy, law and society) is an ethics chapter: out of scope for this knowledge base.
 
 ## Appears in
 [[ad-click-aggregator]], [[fb-news-feed]], [[payment-system]]

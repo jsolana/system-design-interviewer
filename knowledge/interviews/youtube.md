@@ -1,8 +1,8 @@
 ---
 title: YouTube
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/youtube, Grokking the System Design Interview (PDF), "Designing Youtube or Netflix" pp. 82-91, System Design Interview Vol.1 (Alex Xu) ch. 14]
-concepts: [adaptive-bitrate-streaming, presigned-urls, chunked-multipart-upload, cdn-edge-computing, caching, message-queues, workflow-orchestration, data-deduplication, database-replication, database-partitioning, stateless-architecture, video-transcoding]
+sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/youtube, Grokking the System Design Interview (PDF), "Designing Youtube or Netflix" pp. 82-91, System Design Interview Vol.1 (Alex Xu) ch. 14, Machine Learning Design Interview (Khang Pham, 2022), ch. 5 pp. 156-168]
+concepts: [adaptive-bitrate-streaming, presigned-urls, chunked-multipart-upload, cdn-edge-computing, caching, message-queues, workflow-orchestration, data-deduplication, replication, database-partitioning, stateless-architecture, video-transcoding, recommendation-system-pipeline, embeddings, imbalanced-data-and-sampling, ml-model-serving, model-retraining, exploration-exploitation, collaborative-filtering, deep-learning-recsys-architectures, slos-slis-and-error-budgets, graceful-degradation]
 difficulty: medium
 ---
 
@@ -78,3 +78,12 @@ No list; expectations: mid = API/data, upload and playback with multipart and se
   - Metadata sharding by UserID (popular users) or by VideoID (with a cache of hot videos).
   - Inline video deduplication during upload ([[data-deduplication]]).
   - Distribution: consistent hashing across caches, dynamic HTTP redirects to balance (at the cost of extra RTT), geographic caches and CDN for popular videos; videos with 1-20 views/day from own data centers. See [[dropbox]] for large blob uploads.
+
+- **Machine Learning Design Interview (Khang Pham), ch. 5, pp. 156-168 - ML video recommendation**: only the homepage recommender (100 videos per visit), maximizing engagement while exposing new content.
+  - Metrics: offline precision (reasonable), recall (high), ranking loss, logloss; online A/B on CTR, watch time, conversion. Retrain several times per day; inference under 200 ms (ideally < 100 ms); tunable exploration vs exploitation ([[exploration-exploitation]]).
+  - Two stages ([[recommendation-system-pipeline]]): **candidate generation** by matrix factorization over the user-video watch matrix ([[collaborative-filtering]]) and **ranking** that estimates watch probability (logistic regression baseline; DCNv2 with ReLU hidden and sigmoid output, cross-entropy loss; see [[deep-learning-recsys-architectures]]). Features: watched video IDs (embedding), search queries (word2vec/GloVe/BERT), geolocation embedding, age/gender (scaled), aggregated impressions, time features.
+  - Estimations: 150 B views/month, 10% from recommendations = 15 B; 100 recommendations per homepage, ~2 watched; 1.3 B users; 15 B positives + 750 B negatives per month; ~500 B/row x 800 B rows = 4 PB per month (keep 6-12 months in the lake, archive older). Load: 10M recommendation requests/s each ranking 1k-10k videos.
+  - System: DBs for watch history, search queries, users/videos, past recommendations; negative resampling; Spark/EMR/Dataproc feature pipeline; model repo in S3; inference: app server -> candidate generation -> ranking -> top videos; services in Docker on Kubernetes with autoscaling; kube-proxy to let candidate generation call ranking directly ([[ml-model-serving]]).
+  - Challenges: huge data (use recent months, fine-tune existing model), imbalance (watch:not-watched about 2:98 -> negative downsampling; online precision is lower than offline unless corrected, see [[imbalanced-data-and-sampling]]), availability (model-as-a-service).
+  - Adapting to behavior change: multi-armed bandit, Bayesian logistic regression, losses less sensitive to CTR, randomization in ranking. Splitting the two services allows independent build/deploy/scale and smaller memory per pod.
+  - Differs from the base: ML recommendation only; no upload, transcoding or streaming.

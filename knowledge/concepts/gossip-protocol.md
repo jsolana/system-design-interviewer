@@ -30,7 +30,7 @@ Eventual (not instantaneous) detection in exchange for scalability and no centra
 Large decentralized clusters (Dynamo, Cassandra). With few nodes or a coordinator (ZooKeeper) it may not be needed.
 
 ## Appears in
-[[key-value-store]]
+[[key-value-store]], [[uber]]
 
 ## See also
 [[quorum]], [[consistent-hashing]]

@@ -2,7 +2,7 @@
 title: Job Scheduler
 type: interview
 sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/job-scheduler]
-concepts: [message-queues, workflow-orchestration]
+concepts: [message-queues, workflow-orchestration, distributed-periodic-scheduling, retries-timeouts-and-backoff, leader-election, queue-backlog-management]
 difficulty: medium
 ---
 

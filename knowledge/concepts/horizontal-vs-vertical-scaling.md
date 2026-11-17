@@ -32,7 +32,7 @@ Cited example: stackoverflow.com (2013, >10M monthly visitors) ran on 1 master D
 Vertical at the start; horizontal when hardware limits are hit or availability is required.
 
 ## Appears in
-
+[[stock-data-feed]]
 
 ## See also
-[[load-balancer]], [[stateless-architecture]], [[database-replication]], [[sql-vs-nosql]]
+[[load-balancer]], [[stateless-architecture]], [[replication]], [[sql-vs-nosql]]

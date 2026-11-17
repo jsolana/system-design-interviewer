@@ -1,8 +1,8 @@
 ---
 title: Twitter Search
 type: interview
-sources: [Grokking the System Design Interview (PDF), "Designing Twitter Search" pp. 113-118]
-concepts: [inverted-index, database-partitioning, consistent-hashing, caching, load-balancer, database-replication, unique-id-generation]
+sources: [Grokking the System Design Interview (PDF), "Designing Twitter Search" pp. 113-118, https://www.uber.com/es/en/blog/high-performance-search-platform/]
+concepts: [inverted-index, database-partitioning, consistent-hashing, caching, load-balancer, replication, unique-id-generation, change-data-capture, online-data-migration]
 difficulty: medium
 ---
 
@@ -45,10 +45,11 @@ Tweet DB + index servers; app servers query the indexes and an aggregator server
 Shard by word (cheap queries, hotspots) vs shard by tweet (uniform distribution, fan-out to all servers).
 
 ## Related concepts
-[[inverted-index]], [[database-partitioning]], [[consistent-hashing]], [[caching]], [[load-balancer]], [[database-replication]], [[unique-id-generation]]
+[[inverted-index]], [[database-partitioning]], [[consistent-hashing]], [[caching]], [[load-balancer]], [[replication]], [[unique-id-generation]]
 
 ## Follow-up questions
 Ranking by social graph distance, popularity or relevance.
 
 ## Variants
 See [[fb-post-search]] for post search with a different approach (another source).
+- **Uber Freight Search (shared index from fragments)**, source: https://www.uber.com/es/en/blog/high-performance-search-platform/. Differs: indexes business entities (loads) built from ~100 sources across 40+ microservices on OpenSearch. Each index is composed of fragments, each field owned by exactly one fragment (allows partial updates); fragments merge into a denormalized document (no query-time joins). Bootstrap with Spark snapshots (from Hive), then Flink CDC ingestion starting at the bootstrap offset; many-to-one @LinkedEntity fan-out and one-to-many aggregate "fold" fragments; continuous data validator; engine migration by platform-level dual writes. Scale: 70+ topics -> 300 fragments in 20+ indices, thousands of QPS, hundreds of ms p99, seconds of freshness. Trade-off: denormalized copies cause write fan-out. See [[change-data-capture]], [[online-data-migration]].

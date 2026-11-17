@@ -39,7 +39,7 @@ Progression: SQL (lat/long indexes) -> static grid -> dynamic grid in a [[quadtr
 - For the geohash index in a DB, one row per (geohash, business_id) is advisable, and scaling with read replicas rather than sharding if the dataset fits on one server. See [[proximity-service]].
 
 ## Appears in
-[[google-maps]], [[nearby-friends]], [[proximity-service]], [[tinder]], [[uber]]
+[[airbnb-search-ranking]], [[google-maps]], [[nearby-friends]], [[proximity-service]], [[tinder]], [[uber]], [[uber-eta-prediction]]
 
 ## See also
 [[database-indexing]], [[full-text-search]]

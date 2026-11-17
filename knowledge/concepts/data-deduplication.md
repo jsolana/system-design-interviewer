@@ -33,7 +33,7 @@ Massive storage with high redundancy (file synchronization, video, crawling).
 In Google Drive, redundant blocks are eliminated at the account level: two blocks are identical if they have the same hash. In addition, the number of stored versions is limited (prioritizing recent ones) and cold data moves to cold storage (S3 Glacier). See [[dropbox]].
 
 ## Appears in
-[[distributed-email-service]], [[dropbox]], [[web-crawler]], [[youtube]]
+[[distributed-email-service]], [[dropbox]], [[duplicate-url-detection]], [[web-crawler]], [[youtube]]
 
 ## See also
 [[chunked-multipart-upload]], [[bloom-filter]], [[dropbox]], [[youtube]], [[web-crawler]]

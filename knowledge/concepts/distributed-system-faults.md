@@ -2,7 +2,7 @@
 title: Faults in distributed systems (networks, clocks, pauses)
 type: concept
 aliases: [partial failure, unreliable network, unreliable clocks, process pauses, fencing token, failure detection, Byzantine faults, system models, TrueTime]
-sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 8 (pp. 273-322)]
+sources: [https://aws.amazon.com/builders-library/challenges-with-distributed-systems/, Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 8 (pp. 273-322), DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 9 (pp. 345-388)]
 ---
 
 # Faults in distributed systems
@@ -46,8 +46,18 @@ Fast detection vs false positives; software-based reliability (more complexity) 
 ## When to use it / when not to
 A permanent mental framework when designing distributed services; does not apply to single-node systems.
 
-## Appears in
+## Additional detail (DDIA 2nd edition, ch. 9)
+- *2nd edition (new)*: section **Formal Methods and Randomized Testing** (model checking with TLA+, fault injection/Jepsen, deterministic simulation testing) -> [[distributed-systems-testing]]. Also new: "The Limitations of TCP", fault detection and gray failures (nodes alive but degraded; see [[replication]] request hedging), and chapter 9 is now "The Trouble with Distributed Systems" (1st ed. ch. 8). Observability and tracing (OpenTelemetry, Zipkin, Jaeger) are introduced in ch. 1. Retry storms: [[overload-and-metastable-failures]].
 
+## Additional detail (AWS Builders' Library, challenges with distributed systems)
+Source: https://aws.amazon.com/builders-library/challenges-with-distributed-systems/
+- Difficulty ranking: offline (batch) < soft real-time < hard real-time request/reply (hardest).
+- A request/reply round trip has **eight steps** (post request, deliver, validate, update server state, post reply, deliver, validate, update client state); each can fail independently since client, network and server do not share fate. A timeout is **UNKNOWN**: may or may not have taken effect, so side-effecting calls need idempotency ([[retries-timeouts-and-backoff]]).
+- Failures recur at every level (machines, groups, Regions), tests multiply (10 scenarios x 20 permutations = 200), bugs stay latent for months and spread via the network (amazon.com incident: a catalog server with a full disk returned fast empty replies, the LB read speed as health and sent it much traffic; see [[health-checks]]).
+- *Interview note*: lead with "assume every network call can return UNKNOWN".
+
+## Appears in
+None yet.
 
 ## See also
 [[consensus]], [[linearizability]], [[replication]], [[distributed-lock]], [[rate-limiting]]

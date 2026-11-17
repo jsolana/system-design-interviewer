@@ -2,7 +2,7 @@
 title: Distributed Key-Value Store
 type: interview
 sources: [System Design Interview Vol.1 (Alex Xu), ch. 6, pp. 87-109]
-concepts: [cap-theorem, consistent-hashing, quorum, replication, vector-clocks, gossip-protocol, merkle-tree, lsm-trees, bloom-filter, sql-vs-nosql, multi-data-center]
+concepts: [cap-theorem, eventual-consistency, consistent-hashing, quorum, replication, vector-clocks, gossip-protocol, merkle-tree, lsm-trees, bloom-filter, sql-vs-nosql, multi-data-center]
 difficulty: high
 ---
 

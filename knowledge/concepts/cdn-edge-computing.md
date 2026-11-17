@@ -2,7 +2,7 @@
 title: CDN and edge computing
 type: concept
 aliases: [CDN, edge functions]
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/bitly, https://www.hellointerview.com/learn/system-design/problem-breakdowns/ticketmaster, https://www.hellointerview.com/learn/system-design/problem-breakdowns/dropbox, https://www.hellointerview.com/learn/system-design/problem-breakdowns/youtube, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-live-comments, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-post-search, System Design Interview Vol.1 (Alex Xu), ch. 1, System Design Interview Vol.1 (Alex Xu), ch. 14]
+sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/bitly, https://www.hellointerview.com/learn/system-design/problem-breakdowns/ticketmaster, https://www.hellointerview.com/learn/system-design/problem-breakdowns/dropbox, https://www.hellointerview.com/learn/system-design/problem-breakdowns/youtube, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-live-comments, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-post-search, System Design Interview Vol.1 (Alex Xu), ch. 1, System Design Interview Vol.1 (Alex Xu), ch. 14, https://blog.cloudflare.com/origin-range-requests/]
 ---
 
 # CDN and edge computing
@@ -40,8 +40,11 @@ CDN flow: the user requests a URL on the CDN domain; if it is not cached, the CD
 ## Additional detail (Xu Vol. 1, ch. 14)
 Cost: 5M DAU x 5 videos x 0.3 GB x $0.02/GB = $150,000/day. Reduction: serve only popular videos from the CDN (long-tail distribution), encode rarely watched content on demand, do not replicate per region what is only popular in one, and use a custom CDN with ISPs (Netflix). Upload centers via a CDN close to the user. See [[youtube]].
 
+## Additional detail (Cloudflare, origin range requests)
+Cloudflare replaced customer-tuned fixed range sizes (cache key included the range size; R2 used 64 MiB, so a small read crossing a boundary could move 128 MiB; concurrent requests blocked each other) with the cache's existing on-disk chunk size as the range unit: aligned chunk fetches, one response composed from cached prefix + in-flight download + fresh suffix, new requests attach to in-flight downloads, strict validation (range, total size, ETag, If-Range), no composition for compressed content. Result: R2 p99 TTFB about halved, tiered-cache traffic down about 6% (petabytes/day). Lesson: bounded predictable cost beats a per-customer tuning knob. Source: https://blog.cloudflare.com/origin-range-requests/
+
 ## Appears in
-[[dropbox]], [[fb-live-comments]], [[fb-news-feed]], [[fb-post-search]], [[google-maps]], [[google-news]], [[instagram]], [[stock-exchange]], [[typeahead]], [[url-shortener]], [[youtube]]
+[[discord-voice-infrastructure]], [[dropbox]], [[fb-live-comments]], [[fb-news-feed]], [[fb-post-search]], [[google-maps]], [[google-news]], [[instagram]], [[stock-exchange]], [[typeahead]], [[url-shortener]], [[youtube]]
 
 ## See also
 [[caching]], [[http-redirects]]

@@ -2,7 +2,7 @@
 title: System design interview framework
 type: concept
 aliases: [4-step process, marco de entrevista]
-sources: [System Design Interview (Alex Xu), Vol. 1, ch. 3 (pp. 42-50)]
+sources: [Cracking the Coding Interview, ch. 9 pp. 137-143, System Design Interview (Alex Xu), Vol. 1, ch. 3 (pp. 42-50)]
 ---
 
 # System design interview framework
@@ -32,8 +32,14 @@ Depth vs. breadth depending on level (senior: bottlenecks and resources).
 ## When to use it / when not to
 Always as a guide; adapt timings to the problem.
 
-## Appears in
+## Additional detail (Cracking the Coding Interview, ch. 9)
+- Handling the questions: communicate, go broad first, use the whiteboard, acknowledge interviewer concerns, be careful with and state assumptions, estimate when data is missing, drive the conversation.
+- Five steps: (1) scope the problem and list use cases, (2) make reasonable assumptions (e.g. 1M new URLs/day; stale analytics by 10 minutes may be fine, stale redirects not), (3) draw the major components and walk through end to end, (4) identify key issues (bottlenecks, hot items), (5) redesign for them and be open about limitations.
+- For single scalable algorithms: ask questions, make believe (all in one machine), get real, solve problems, iterate.
+- Considerations: failures anywhere, availability (fraction of time up) vs reliability (probability of working over a time unit), read-heavy (cache) vs write-heavy (queue writes, mind failure), security. There is no perfect design; articulate trade-offs.
 
+## Appears in
+None yet.
 
 ## See also
 [[back-of-the-envelope-estimation]]

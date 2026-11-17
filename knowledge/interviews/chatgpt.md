@@ -1,8 +1,8 @@
 ---
 title: ChatGPT
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/chatgpt]
-concepts: [server-sent-events, message-queues]
+sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/chatgpt, Generative AI System Design Interview (Aminian & Sheng, 2024), ch. 4]
+concepts: [server-sent-events, message-queues, transformer-architecture, tokenization, llm-training-stages, text-generation-sampling, llm-evaluation]
 difficulty: high
 ---
 
@@ -48,4 +48,9 @@ Not covered in the source.
 The five deep dives.
 
 ## Variants
-Not covered in the source.
+- **Model-centric ML design (Aminian & Sheng, ch. 4)**: personal-assistant chatbot (text in/out, context window of at least 4096 tokens, follow-ups within a session, 80,000 instruction/answer examples for personalization) designed as an ML system rather than serving infrastructure.
+  - Architecture: decoder-only Transformer with RoPE positional encoding; three-stage training (pretraining, SFT, RLHF with reward model and PPO/DPO), see [[llm-training-stages]].
+  - Sampling: top-p with temperature and repetition penalties (beam/greedy repeat on open-ended text), see [[text-generation-sampling]].
+  - Evaluation: perplexity plus task and safety benchmarks, human evaluation, online ratings/engagement/conversion/leaderboards, see [[llm-evaluation]].
+  - Inference pipeline: input safety filter (harmful prompts) -> prompt enhancer (expand acronyms, fix typos, add context) -> response generator (optionally several candidates ranked) -> output safety filter -> refusal/fallback response generator; a session/chat-history manager feeds prior turns plus the enhanced prompt to the generator.
+  - Follow-ups: dialogue state tracking, multi-token prediction, RAG, distillation, domain adaptation, PPO vs DPO vs rejection sampling, chain-of-thought, verifiable justifications.

@@ -29,7 +29,7 @@ Eventual consistency between regions versus latency and availability.
 With a global user base or DR requirements. Excessive for a single small market.
 
 ## Appears in
-[[distributed-email-service]], [[distributed-rate-limiter]], [[key-value-store]], [[proximity-service]], [[s3-object-storage]], [[stock-exchange]], [[unique-id-generator]]
+[[discord-voice-infrastructure]], [[distributed-email-service]], [[distributed-rate-limiter]], [[key-value-store]], [[proximity-service]], [[s3-object-storage]], [[stock-exchange]], [[unique-id-generator]]
 
 ## See also
-[[cdn-edge-computing]], [[database-replication]]
+[[cdn-edge-computing]], [[replication]]

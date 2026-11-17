@@ -31,7 +31,7 @@ Pessimistic (2PL) vs optimistic (SSI) vs serial. Detection of an outdated premis
 When there are invariants across concurrent objects (reservations, balances). Avoid if the workload has a lot of contention on a few rows and waiting/aborts are not tolerated.
 
 ## Appears in
-
+None yet.
 
 ## See also
 [[transactions-and-isolation-levels]], [[two-phase-commit]], [[optimistic-concurrency-control]], [[distributed-lock]]

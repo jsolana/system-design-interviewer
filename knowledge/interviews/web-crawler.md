@@ -1,7 +1,7 @@
 ---
 title: Web Crawler
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/web-crawler, System Design Interview Vol.1 (Alex Xu) ch. 9, Grokking the System Design Interview (PDF), "Designing a Web Crawler" pp. 119-127]
+sources: [Cracking the Coding Interview ch. 9.3, https://www.hellointerview.com/learn/system-design/problem-breakdowns/web-crawler, System Design Interview Vol.1 (Alex Xu) ch. 9, Grokking the System Design Interview (PDF), "Designing a Web Crawler" pp. 119-127]
 concepts: [message-queues, rate-limiting, distributed-lock, bloom-filter, caching, consistent-hashing, database-partitioning, stateless-architecture, load-balancer, data-deduplication]
 difficulty: medium
 ---
@@ -71,3 +71,4 @@ Dynamic content (headless browser, Puppeteer); monitoring (Datadog/New Relic); l
   - Distributed frontier with a **FIFO queue per worker and hashed hostname** to enforce politeness (one thread per web server); enqueue/dequeue buffers on disk (hundreds of millions of URLs).
   - Dedupe of documents (64-bit checksum, 120 GB) and of URLs (4 B, 60 GB) with LRU cache; **[[bloom-filter]]** as an alternative (false positives mean that page is never downloaded); URL filters; DNS with local cache (bottleneck); state checkpointing.
   - Fault tolerance with consistent hashing; the three classes of data (pending URLs, URL checksums and document checksums) reside on the same host according to hostname; **crawler traps** (loops, anti-spam traps).
+- **Cracking the Coding Interview (problem 9.3, pp. 137-145, 378-379)**: only asks how to avoid infinite loops. Cycles in the link graph are avoided with a visited hash table over a BFS queue, but "same page" is ambiguous: by URL (parameters may or may not change the page) or by content (random content differs on each visit). Proposal: compute a signature from page content snippets plus URL; look it up in a DB of recently crawled signatures; if seen, re-insert the page at low priority, else crawl and insert its links. A minimum priority threshold lets crawling "finish" on a small web (e.g. an intranet).

@@ -15,7 +15,7 @@ It is the first thing to consider when designing a distributed system: it forces
 
 ## How it works
 - To be consistent, all nodes must see the same updates in the same order. With a partition, a read on the lagging side would return stale data; the only way to avoid that is to stop serving from that side (availability is lost).
-- Availability is achieved by replicating data across servers ([[database-replication]]).
+- Availability is achieved by replicating data across servers ([[replication]]).
 
 ## Variants and techniques
 Practical choice in the source's exercises: social content systems (Instagram, Twitter, YouTube) -> availability over consistency (acceptable for a photo/tweet to take a while to appear); messaging (Messenger) -> high consistency of history across devices even at the cost of availability.
@@ -35,4 +35,4 @@ Reasoning framework to justify asynchronous replication, caches and database cho
 [[distributed-email-service]], [[google-maps]], [[key-value-store]]
 
 ## See also
-[[database-replication]], [[distributed-systems-characteristics]]
+[[replication]], [[distributed-systems-characteristics]]

@@ -2,7 +2,7 @@
 title: Database partitioning
 type: concept
 aliases: [sharding, partitioning, particionado]
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/gopuff, System Design Interview Vol.1 (Alex Xu), ch. 1, Grokking the System Design Interview (PDF), "Sharding or Data Partitioning" pp. 178-181, Designing Data-Intensive Applications (Kleppmann), ch. 6]
+sources: [https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/, Cracking the Coding Interview, ch. 9 pp. 140-141, https://www.hellointerview.com/learn/system-design/problem-breakdowns/gopuff, System Design Interview Vol.1 (Alex Xu), ch. 1, Grokking the System Design Interview (PDF), "Sharding or Data Partitioning" pp. 178-181, Designing Data-Intensive Applications (Kleppmann), ch. 6, DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 7 (pp. 251-271)]
 ---
 
 # Database partitioning
@@ -46,8 +46,31 @@ When a single instance can't handle the volume and the queries have a natural lo
 - **Request routing / service discovery**: three approaches (any node forwards; routing layer; client knows the assignment); usually delegated to a coordination service (ZooKeeper, [[consensus]]) or *gossip* (Cassandra) to learn the partition->node assignment.
 - Partitioning + [[replication]]: each partition is replicated; multi-partition transactions require [[two-phase-commit]] or avoiding them.
 
+## Additional detail (DDIA 2nd edition, ch. 7)
+*2nd edition note*: "partitioning" is renamed **sharding** (ch. 7).
+- Sharding is heavyweight: only needed when data volume or **write** throughput exceeds one node (read scaling can use replicas). Needs a partition key; cross-shard writes need distributed transactions. Some systems shard inside one machine (one process per core: Redis, VoltDB, FoundationDB).
+- **Hash-range sharding**: assign ranges of the hash space to shards that can split/merge (YugabyteDB, DynamoDB, optional in MongoDB). Cassandra/ScyllaDB use many ranges with random boundaries per node (16 per node in Cassandra, 256 in ScyllaDB). Compound keys: hash the first column, range-scan the rest (BigQuery partition + cluster columns, Snowflake micro-partitions, Delta Lake). Language built-in hash functions (Java hashCode, Ruby hash) are unsuitable (vary per process).
+- **Fixed number of shards** (Citus, Riak, Elasticsearch, Couchbase): choose a count divisible by many numbers (e.g. 1,000) and give stronger nodes more; resharding is costly if the guess is wrong.
+- **Hot keys**: append a random 2-digit suffix to a hot key to spread writes over 100 keys (reads must gather all; track which keys are split). Cloud services automate this (Amazon heat management / adaptive capacity). Rebalancing automatic vs manual (Couchbase/Riak suggest and an admin commits).
+- Multitenancy via sharding: [[multitenancy-and-cell-based-architecture]].
+
+## Additional detail (Figma, https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/)
+Production story: Postgres on the largest RDS instance, ~100x growth 2020-2024; vacuum and write IOPS limits hit on multi-TB tables.
+- **Phase 1, vertical partitioning**: groups of related tables moved to their own DBs (a dozen by end of 2022); quick win but a single table is the smallest unit.
+- **Phase 2, horizontal sharding** of tables with hashed routing on the shard key (UserID, FileID, OrgID) to avoid hot spots from auto-increment/Snowflake-style IDs; related tables are **colos** sharing a key so joins/transactions stay in one shard. First sharded table shipped Sept 2023 (~9 months of work).
+- **DBProxy** (Go) between app and PgBouncer: parser -> logical planner (logical shard IDs) -> physical planner (maps to physical DBs, rewrites queries); query language covers ~90% of production queries; queries without the shard key become scatter-gather.
+- **Logical before physical**: Postgres views expose per-shard subsets on the unsharded DB, rolled out by percentage feature flag (rollback = config change); only then copy data to N physical DBs. Shadow planning/reads de-risked decisions. Failover ~10 s partial availability; topology updates < 1 s; views < 10% overhead.
+- Rejected NewSQL (CockroachDB, TiDB, Spanner, Vitess) and NoSQL because of migration risk and rewrite cost; built a narrower in-house solution.
+- Costs: no atomic cross-shard transactions, no cross-shard FKs/unique indexes, coordinated schema changes, inefficient range scans on hashed keys.
+
+## Additional detail (Cracking the Coding Interview, ch. 9)
+- Vertical partitioning: by feature (profiles, messages); a table that grows huge needs repartitioning.
+- Key/hash-based: server = mod(key, N); N is effectively fixed, adding servers reshuffles all data.
+- Directory-based: lookup table makes adding servers easy but is a single point of failure and a performance hit.
+- Real systems usually combine schemes. Related design drill ("scale an algorithm"): ask questions, pretend all data fits on one machine, get real (how to split data, how does a machine know where to look), then solve those issues iteratively. Example: find documents containing all words from a list, by splitting the inverted index by keyword ranges (small lookup table, expensive shifts when data grows) or by document; see [[inverted-index]].
+
 ## Appears in
-[[digital-wallet]], [[distributed-cache]], [[distributed-email-service]], [[distributed-message-queue]], [[distributed-rate-limiter]], [[dropbox]], [[fb-post-search]], [[gaming-leaderboard]], [[gopuff]], [[hotel-reservation]], [[nearby-friends]], [[pastebin]], [[proximity-service]], [[s3-object-storage]], [[tinder]], [[top-k]], [[twitter]], [[twitter-search]], [[typeahead]], [[uber]], [[unique-id-generator]], [[web-crawler]], [[youtube]]
+[[digital-wallet]], [[distributed-cache]], [[distributed-email-service]], [[distributed-message-queue]], [[distributed-rate-limiter]], [[dropbox]], [[duplicate-url-detection]], [[fb-post-search]], [[gaming-leaderboard]], [[git-repository-hosting]], [[gopuff]], [[hotel-reservation]], [[nearby-friends]], [[pastebin]], [[proximity-service]], [[s3-object-storage]], [[search-query-cache]], [[social-network-shortest-path]], [[tinder]], [[top-k]], [[twitter]], [[twitter-search]], [[typeahead]], [[uber]], [[unique-id-generator]], [[web-crawler]], [[youtube]]
 
 ## See also
 [[caching]], [[database-indexing]]

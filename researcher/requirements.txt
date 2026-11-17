@@ -1,0 +1,8 @@
+langchain>=1.0
+langchain-anthropic>=1.0
+langchain-openai>=1.0
+langchain-tavily>=0.2
+gradio>=5.0
+requests>=2.32
+python-dotenv>=1.0
+pypdf>=5.0

@@ -2,7 +2,7 @@
 title: Reliability, scalability and maintainability (load and percentiles)
 type: concept
 aliases: [load parameters, tail latency, percentiles, SLO, SLA, p99, scaling up/out]
-sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 1 (pp. 3-22)]
+sources: [Designing Data-Intensive Applications (Kleppmann), full PDF, ch. 1 (pp. 3-22), DDIA 2nd ed. (Kleppmann & Riccomini), full PDF, ch. 2 (pp. 33-56)]
 ---
 
 # Reliability, scalability and maintainability (load and percentiles)
@@ -34,6 +34,16 @@ It provides the vocabulary to reason about non-functional requirements: "scalabl
 
 ## When to use it / when not to
 At the start of any interview: define load parameters and latency targets (percentiles) before choosing an architecture.
+
+## Additional detail (DDIA 2nd edition, ch. 2)
+- *2nd edition note*: chapter 1 of the 1st edition became "Defining Nonfunctional Requirements" (ch. 2) and now opens with the **home-timeline case study** (see [[materialized-views]]): 5,800 posts/s avg (150k peak), ~200 followers -> ~1M timeline writes/s vs 400M lookups/s when polling.
+- Terminology: **response time** (client view) = **service time** + **queueing delay** + **network latency**; "latency" = any time the request is latent. Jitter = variation of network delay. The mean is useful for estimating throughput limits but not for "typical" time.
+- Percentile estimation libraries: HdrHistogram, t-digest, OpenHistogram, DDSketch. Latency impact studies are shown to be unreliable (conflicting numbers); Yahoo: 20-30% more clicks when fast vs slow by >=1.25 s.
+- **New**: overload dynamics, retry storms, metastable failures, backoff, circuit breakers, load shedding ([[overload-and-metastable-failures]]).
+- Reliability numbers: 2-5% of HDDs fail per year (10,000 disks -> ~1 failure/day); SSDs 0.5-1%/year with ~1 uncorrectable error/year/drive; ~1 in 1,000 machines has a CPU core that occasionally computes wrong results; >1% of machines hit an uncorrectable RAM error per year even with ECC. Hardware faults are weakly independent; software faults are strongly correlated (leap-second bug 2012, SSD firmware dying after 32,768 hours). Availability zones group co-located resources; rolling upgrades.
+- **Fault injection / chaos engineering** to exercise fault tolerance ([[distributed-systems-testing]]).
+- Scalability: **shared-memory** (vertical, cost grows faster than linear), **shared-disk** (NAS/SAN, limited by locking), **shared-nothing** (horizontal, needs sharding); cloud-native systems separate storage and compute, similar to shared-disk without its problems ([[cloud-native-architecture]]). Linear scalability = 2x resources for 2x load. Plan at most one order of magnitude ahead; manual scaling can have fewer surprises than autoscaling.
+- Maintainability is detailed as operability (automation is a double-edged sword), simplicity and evolvability.
 
 ## Appears in
 [[fb-news-feed]]

@@ -2,7 +2,7 @@
 title: Cursor pagination
 type: concept
 aliases: [keyset pagination, cursor-based pagination]
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-live-comments, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-news-feed]
+sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-live-comments, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-news-feed, https://github.blog/engineering/architecture-optimization/from-2500-requests-to-24-rebuilding-star-history-without-the-stargazers/]
 ---
 
 # Cursor pagination
@@ -24,6 +24,9 @@ Does not allow jumping to an arbitrary page.
 
 ## When to use it / when not to
 Ordered, continuously growing lists (comments, feeds).
+
+## Additional detail (GitHub star history)
+A smaller page does not mean a cheaper query: GitHub's stargazers endpoint recounted all stars per page (about 37,000 slow count queries in a week, avg nearly 3 s) and building a star curve needed about 2,511 requests for a 251k-star repo. The replacement endpoint filters by an indexed `created_at` range first, then groups into daily counts (30 weeks per call, about 24 requests, one pass over rows) instead of aggregate-then-LIMIT/OFFSET (about 6M rows examined). Lesson: return only what the use case needs; document remaining trade-offs (dense weeks, removed stars vanish). Source: https://github.blog/engineering/architecture-optimization/from-2500-requests-to-24-rebuilding-star-history-without-the-stargazers/
 
 ## Appears in
 [[fb-live-comments]], [[google-news]]

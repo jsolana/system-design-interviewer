@@ -2,7 +2,7 @@
 title: Proxies
 type: concept
 aliases: [proxy server, reverse proxy, forward proxy]
-sources: [Grokking the System Design Interview (PDF), "Proxies" pp. 183-184]
+sources: [https://www.figma.com/blog/figmas-next-generation-data-caching-platform/, Grokking the System Design Interview (PDF), "Proxies" pp. 183-184]
 ---
 
 # Proxies
@@ -27,8 +27,11 @@ You gain caching, control and security; you add a hop and a possible SPOF.
 ## When to use it / when not to
 To centralize logging/filtering/caching; to hide backends (reverse proxy).
 
-## Appears in
+## Additional detail (Figma, data proxies)
+Figma runs protocol-aware proxies as a scaling layer: **FigCache** (stateless RESP proxy for Redis: connection multiplexing, routing, guardrails, scatter-gather for read-only cross-shard pipelines; see [[caching]]) and **DBProxy** (Go, between app and PgBouncer: query parsing, logical/physical planning, load shedding, topology management; see [[database-partitioning]]). Benefit: one place for observability and traffic control; cost: extra hop and a new critical-path tier that must itself be highly available.
 
+## Appears in
+None yet.
 
 ## See also
 [[load-balancer]], [[caching]], [[cdn-edge-computing]]

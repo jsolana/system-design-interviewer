@@ -44,7 +44,7 @@ Examples in the source: URLs/pastes (billions of small objects without relations
 The book's criterion: relational is the default option (more than 40 years of maturity, joins with SQL). Consider NoSQL (CouchDB, Neo4j, Cassandra, HBase, DynamoDB) if: very low latency is needed; the data is unstructured or non-relational; you only need to serialize/deserialize (JSON, XML, YAML); or you need to store massive amounts. The four families: key-value ([[key-value-store]]), graph, column and document; generally without joins.
 
 ## Appears in
-[[distributed-email-service]], [[dropbox]], [[gaming-leaderboard]], [[key-value-store]], [[pastebin]], [[twitter]], [[whatsapp]]
+[[distributed-email-service]], [[dropbox]], [[gaming-leaderboard]], [[key-value-store]], [[pastebin]], [[personal-financial-manager]], [[stock-data-feed]], [[twitter]], [[whatsapp]]
 
 ## See also
 [[cap-theorem]], [[database-partitioning]], [[database-indexing]]

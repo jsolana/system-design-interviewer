@@ -1,8 +1,8 @@
 ---
 title: Uber (ride-sharing)
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/uber, Grokking the System Design Interview (PDF), "Designing Uber backend" pp. 148-153]
-concepts: [geospatial-indexing, distributed-lock, message-queues, workflow-orchestration, database-partitioning, caching, quadtree, server-sent-events]
+sources: [https://highscalability.com/brief-history-of-scaling-uber/, https://www.hellointerview.com/learn/system-design/problem-breakdowns/uber, Grokking the System Design Interview (PDF), "Designing Uber backend" pp. 148-153]
+concepts: [geospatial-indexing, distributed-lock, message-queues, workflow-orchestration, database-partitioning, caching, quadtree, server-sent-events, cascading-failures, graceful-degradation, capacity-planning, gossip-protocol]
 difficulty: high
 ---
 
@@ -69,3 +69,8 @@ No list. Expectations: mid = APIs, HLD, spatial index idea and a "good" lock; se
   - Push: pub/sub notification service (subscriptions ≈ 21 MB; 2.5 M subscribers x 19 B ≈ 47.5 MB/s) with long polling or push notifications, but it complicates dynamic driver additions in the area; simpler alternative: the client **pulls every ~5 s**.
   - Ride request: aggregator queries QuadTree servers, sorts by rating and notifies the top 3 at once (the first to accept wins, the others receive a cancellation; if nobody responds, the next 3).
   - Ranking by rating: top-N per partition + aggregator. Advanced topics: slow networks, disconnection during a ride (billing), pull vs push.
+- **High Scalability, "Brief History of Scaling Uber" (https://highscalability.com/brief-history-of-scaling-uber/)**: evolution story rather than a from-scratch design.
+  - Stages: LAMP launch (2009; concurrency bug of one car dispatched to two riders) -> two monoliths (~2011: Node.js real-time dispatch + Python API on PostgreSQL) -> microservices (~100 by 2014, thousands by 2018) -> trip data moved to Schemaless (append-only, sharded, on MySQL) and Cassandra -> dispatch split into a real-time gateway and a rewritten geospatial dispatch service -> Java/Go standardization (Project Ark) -> layered Edge Gateway (~2020) -> fulfillment rewritten on Google Cloud Spanner (~2021) -> ongoing cloud migration.
+  - Dispatch state: stateful Node.js nodes share supply/geo state through Ringpop (gossip, see [[gossip-protocol]]); cities split into S2 cells (later H3) and the cell ID is the sharding key ([[geospatial-indexing]]).
+  - Trade-offs: microservices bring autonomy but a "distributed monolith" risk without shared tooling (RPC, tracing, metrics); standardization reduces duplication at the cost of team freedom; Spanner gives transactions + horizontal scale + less ops, at the price of lock-in to a managed platform.
+  - Scale quoted: 10,500 cities / 70+ countries (mobility), Eats in 45 countries with 130M+ customers, 250,000+ on-prem servers, 4,000+ stateless services made portable.

@@ -1,8 +1,8 @@
 ---
 title: FB Live Comments
 type: interview
-sources: [https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-live-comments]
-concepts: [server-sent-events, pub-sub, websockets, consistent-hashing, cdn-edge-computing, caching, cursor-pagination]
+sources: [https://highscalability.com/capturing-a-billion-emo-j-i-ons/, https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-live-comments]
+concepts: [server-sent-events, pub-sub, websockets, consistent-hashing, cdn-edge-computing, caching, cursor-pagination, stream-processing]
 difficulty: medium
 ---
 
@@ -55,4 +55,7 @@ DynamoDB (Postgres/MySQL viable): comments table with `liveVideoId` as partition
 No explicit list; the deep dive questions. Expectations: mid = push and pub/sub with hints; senior = pub/sub and leading the scaling discussion; staff = reliability limits and technologies.
 
 ## Variants
-Not covered in the source.
+- **High Scalability, "Capturing A Billion Emo(j)i-ons" (Hotstar live-sports emoji reactions, https://highscalability.com/capturing-a-billion-emo-j-i-ons/)**: write-heavy aggregate of reactions instead of per-comment fan-out.
+  - Scale: ~5 B emojis from 55.83 M users during the 2019 ICC Cricket World Cup; 6.5 B emojis and ~3 B votes overall.
+  - Pipeline: clients POST over HTTP behind auto-scaled load balancers -> API writes to an in-process buffer and returns immediately -> Go producer (goroutines/channels) flushes to Kafka (500 ms flush interval, up to 20,000 messages per request) -> Spark Streaming aggregates in 2 s micro-batches into a second Kafka topic -> Python consumer picks the most popular emojis and publishes them to an internal PubSub socket layer that renders the swarm on clients.
+  - Decisions: async writes accept rare data loss for low latency (sync + retry would suit transactional data); Spark micro-batching chosen over Flink/Storm/Kafka Streams for built-in aggregation and community, batch interval tunes freshness vs throughput. Same pipeline reused for voting, polls, trivia. Storage of aggregates, recovery and API details are not covered by the post.
